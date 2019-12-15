@@ -1,4 +1,6 @@
-# Submarine Simulator by Wallace Ferancini Rosa and Thiago Marinho Pereira
+# Submarine Simulator
+
+Developed by Wallace Ferancini Rosa and Thiago Marinho Pereira
 
 Para compilar basta executar o comando a seguir no terminal do Linux: 
 
