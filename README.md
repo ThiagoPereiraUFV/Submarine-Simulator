@@ -10,19 +10,12 @@ __Run the game typing "make && main.out" without quotes on your Linux Terminal__
 
 ### Key controllers
 
--Arrow keys up and down make the submarine immerse ou emerge
-
--Arrow keys right and left make the submarine change its direction
-
--Keys H and h enable or disable the help menu
-
--Keys F and f or I and i change the camera position
-
--Key 1 enable or disable ambient light and key 2 enable or disable spotlight
-
--Key L or l disable the light effects
-
--Key G or g toggle between Gouroud or Flat-Shading global shading models
-
+* Arrow keys up and down make the submarine immerse ou emerge
+* Arrow keys right and left make the submarine change its direction
+* Keys H and h enable or disable the help menu
+* Keys F and f or I and i change the camera position
+* Key 1 enable or disable ambient light and key 2 enable or disable spotlight
+* Key L or l disable the light effects
+* Key G or g toggle between Gouroud or Flat-Shading global shading models
 
 ### OBJ models obtained from (https://free3d.com)
