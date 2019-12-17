@@ -1,4 +1,4 @@
-## Submarine Simulator v1.0 by Wallace F. Rosa and Thiago M. Pereira
+## Submarine Simulator v1.0 by  Thiago M. Pereira and Wallace F. Rosa
 
 __You must have to install the openGL library using the following commands on your Linux Terminal:__
 
