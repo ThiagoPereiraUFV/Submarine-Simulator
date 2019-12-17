@@ -23,3 +23,6 @@ You must have to install the openGL library:
 -Key L or l disable the light effects
 
 -Key G or g toggle between Gouroud or Flat-Shading global shading
+
+
+### OBJ models obtained from (https://free3d.com)
