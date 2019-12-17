@@ -1,12 +1,12 @@
 ## Submarine Simulator v1.0 by Wallace Ferancini Rosa and Thiago Marinho Pereira
 
-Run the game typing "make && main.out" without quotes on your Linux Terminal
-
-You must have to install the openGL library:
+__You must have to install the openGL library:__
 
 > sudo apt-get update
 
 > sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+
+__Run the game typing "make && main.out" without quotes on your Linux Terminal__
 
 ### Key controllers
 
