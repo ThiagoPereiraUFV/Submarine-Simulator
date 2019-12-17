@@ -1,4 +1,4 @@
-# Submarine Simulator v1.0 by Wallace Ferancini Rosa and Thiago Marinho Pereira
+## Submarine Simulator v1.0 by Wallace Ferancini Rosa and Thiago Marinho Pereira
 
 Run the game typing "make && main.out" without quotes on your Linux Terminal
 
