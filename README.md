@@ -7,7 +7,7 @@ __You must have to install the openGL library using the following commands on yo
 > sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
 
-__Execute the following command to compile the code and run the game on your Linux Terminal__
+__Execute the following command to compile the code and run the game on your Linux Terminal:__
 
 >  make
 
