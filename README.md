@@ -1,6 +1,6 @@
 ## Submarine Simulator v1.0 by Wallace Ferancini Rosa and Thiago Marinho Pereira
 
-__You must have to install the openGL library using the following commands:__
+__You must have to install the openGL library using the following commands on your Linux Terminal:__
 
 > sudo apt-get update
 
