@@ -1,5 +1,5 @@
 all : object3D.o parser.o
-	g++ main.cpp -O3 -lglut -lGL -lGLU -lm -std=c++11 object3D.o parser.o -o main.out
+	g++ main.cpp -O3 -lglut -lGL -lGLU -lm -std=c++11 object3D.o parser.o -o main.out && ./main.out
 
 object3D.o : object3D.cpp object3D.h
 	g++ -c object3D.cpp
