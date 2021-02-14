@@ -1,11 +1,19 @@
-all : object3D.o parser.o
-	g++ ./source/main.cpp -O3 -w -lglut -lGL -lGLU -lm -std=c++11 object3D.o parser.o -o main.out && ./main.out
+optFlags = -Ofast -std=c++11 -Wall
+extraFlags = -c -Wall
+oglFlags = $(optFlags) -lglut -lGL -lGLU -lm
+includePath = ./source/include
 
-object3D.o : ./source/object3D.cpp ./source/object3D.h
-	g++ -c ./source/object3D.cpp
+Simulator : Object3D.o Parser.o
+	g++ ./source/main.cpp $(oglFlags) ./bin/*.o -o simulator.out
 
-parser.o : ./source/parser.cpp ./source/parser.h
-	g++ -c ./source/parser.cpp
+Object3D.o :
+	g++ $(includePath)/object3D.cpp $(extraFlags) -o ./bin/Object3D.o
 
-clean:
-	rm -f -r *.out *.o #limpa tudo
+Parser.o :
+	g++ $(includePath)/parser.cpp $(extraFlags) -o ./bin/Parser.o
+
+start :
+	./simulator.out
+
+clean :
+	rm ./bin/*.o *.out
