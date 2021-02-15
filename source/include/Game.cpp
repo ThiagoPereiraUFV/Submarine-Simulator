@@ -10,8 +10,6 @@ void Game::game(int argc, char** argv) {
 	glutKeyboardFunc(HandleKeyboard);
 	glutIdleFunc(display);
 	glutMainLoop();
-
-	delete texture;
 }
 
 //	Set up OpenGl window
@@ -39,8 +37,6 @@ void Game::init() {
 	//	Configurando luzes
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);   //	Sol
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);  //	Luz direcionada
-
-	loadTexture();
 
 	//	Carregando modelos
 	submarino = parserOBJ::parse("models/submarine.obj");

@@ -10,126 +10,6 @@
 #include "include/globalVariables.cpp"
 #include "include/environment.cpp"
 
-// biblioteca para auxilio no carregamento de imagens
-#define STB_IMAGE_IMPLEMENTATION
-#include "include/stb_image.h"
-
-unsigned int *texture = new unsigned int[2];
-GLUquadricObj *sphere = gluNewQuadric();
-
-struct Image {
-	int sizeX;
-	int sizeY;
-	int nrChannels;
-	unsigned char *data;
-};
-
-float xrot;
-float yrot;
-float zrot;
-float ratio;
-
-typedef struct Image Image;
-
-#define checkImageWidth 64
-#define checkImageHeight 64
-
-int ImageLoad(const char *filename, Image *image) {
-	FILE *file;
-	unsigned size;              // size of the image in bytes.
-	unsigned long i;            // standard counter.
-	unsigned short int planes;  // number of planes in image (must be 1)
-	unsigned short int bpp;     // number of bits per pixel (must be 24)
-
-	char temp;  // temporary color storage for bgr-rgb conversion.
-	// make sure the file is there.
-
-	if((file = fopen(filename, "rb")) == NULL) {
-		printf("File Not Found : %s\n", filename);
-		return 0;
-	}
-
-	// seek through the bmp header, up to the width/height:
-	fseek(file, 18, SEEK_CUR);
-
-	// read the width
-	if((i = fread(&image->sizeX, 4, 1, file)) != 1) {
-		printf("Error reading width from %s.\n", filename);
-		return 0;
-	}
-	// printf("Width of %s: %lu\n", filename, image->sizeX);
-
-	// read the height
-	if((i = fread(&image->sizeY, 4, 1, file)) != 1) {
-		printf("Error reading height from %s.\n", filename);
-		return 0;
-	}
-	// printf("Height of %s: %lu\n", filename, image->sizeY);
-	// calculate the size (assuming 24 bits or 3 bytes per pixel).
-
-	size = image->sizeX * image->sizeY * 3;
-	// read the planes
-	if((fread(&planes, 2, 1, file)) != 1) {
-		printf("Error reading planes from %s.\n", filename);
-		return 0;
-	}
-
-	if(planes != 1) {
-		printf("Planes from %s is not 1: %u\n", filename, planes);
-		return 0;
-	}
-
-	// read the bitsperpixel
-
-	if((i = fread(&bpp, 2, 1, file)) != 1) {
-		printf("Error reading bpp from %s.\n", filename);
-		return 0;
-	}
-
-	if(bpp != 24) {
-		printf("Bpp from %s is not 24: %u\n", filename, bpp);
-		return 0;
-	}
-	// seek past the rest of the bitmap header.
-
-	fseek(file, 24, SEEK_CUR);
-	image->nrChannels = 3;
-	// read the data.
-	image->data = stbi_load(filename, &(image->sizeX), &(image->sizeY),
-	                        &(image->nrChannels), 0);
-	if(image->data == NULL) {
-		printf("Error allocating memory for color-corrected image data\n");
-		return 0;
-	}
-	if((i = fread(image->data, size, 1, file)) != 1) {
-		printf("Error reading image data from %s.\n", filename);
-		return 0;
-	}
-	/* for (i=0;i<size;i+=3) { // reverse all of the colors. (bgr -> rgb)
-	    temp = image->data[i];
-	    image->data[i] = image->data[i+2];
-	    image->data[i+2] = temp;
-	} */
-	// we're done.
-	return 1;
-}
-
-Image *loadTexture(const char *file_name) {
-	Image *image_aux;
-	// allocate space for texture
-	image_aux = (Image *)malloc(sizeof(Image));
-	if(image_aux == NULL) {
-		printf("Error allocating space for image");
-		exit(0);
-	}
-
-	if(!ImageLoad(file_name, image_aux)) {
-		exit(1);
-	}
-
-	return image_aux;
-}
-
 void updateVariables(const GLsizei w, const GLsizei h) {
 	view_w = w;
 	view_h = h;
@@ -183,23 +63,15 @@ void display() {
 	     glutSolidSphere(30, 100, 100);
 	 glPopMatrix();*/
 
-	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();
 	for(int i = 0; i < navio.size(); i++) {
-		// glEnable(GL_TEXTURE_2D);
 		if(!started1)
 			navio[i].setPos(shipPos[i]);
 		glPushMatrix();
-		if(i % 2 == 0) {
-			glBindTexture(GL_TEXTURE_2D, texture[0]);
-			gluQuadricTexture(sphere, true);
-		} else
-			glBindTexture(GL_TEXTURE_2D, texture[1]);
 		navio[i].justDraw();
 		glPopMatrix();
 	}
 	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
 
 	for(int i = 0; i < helicoptero.size(); i++) {
 		helicoptero[i].setPos(heliPos[i]);
@@ -215,17 +87,11 @@ void display() {
 		tubarao[i].draw();
 	}
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glPushMatrix();
-
-	gluQuadricTexture(sphere,
-	                  true);  // gera texturas para as superficies quadricas...
 
 	submarino.justDraw();
 
 	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
 
 	if(help)
 		drawHelpMenu();
@@ -386,59 +252,6 @@ void reshape(const GLsizei w, const GLsizei h) {
 	glutPostRedisplay();
 }
 
-void loadTexture() {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	string file_name = "models/texture/navy.bmp";
-	Image *image1 = loadTexture(file_name.c_str());
-
-	if(image1 == NULL) {
-		printf("Image was not returned from loadTexture\n");
-		exit(0);
-	}
-	//    makeCheckImage();
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	// Definindo texturas
-	glGenTextures(2, texture);  // define o numero de texturas
-
-	// Primeira textura
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0, GL_RGB,
-	             GL_UNSIGNED_BYTE, image1->data);
-
-	stbi_image_free(image1->data);
-	delete image1;
-
-	// carregando segunda textura
-	file_name = "models/texture/ship.bmp";
-	image1 = loadTexture(file_name.c_str());
-
-	if(image1 == NULL) {
-		printf("Image was not returned from loadTexture\n");
-		exit(0);
-	}
-
-	// Segunda textura
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0, GL_RGB,
-	             GL_UNSIGNED_BYTE, image1->data);
-
-	stbi_image_free(image1->data);
-	delete image1;
-
-	glEnable(GL_TEXTURE_2D);
-}
-
 void init() {
 	//	Ajustando configuracoes de janela e exibicao
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -462,8 +275,6 @@ void init() {
 	//	Configurando luzes
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);   //	Sol
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);  //	Luz direcionada
-
-	loadTexture();
 
 	//	Carregando modelos
 	submarino = parserOBJ::parse("models/submarine.obj");
@@ -558,6 +369,5 @@ int main(int argc, char **argv) {
 	glutIdleFunc(display);
 	glutMainLoop();
 
-	delete texture;
 	return 0;
 }
