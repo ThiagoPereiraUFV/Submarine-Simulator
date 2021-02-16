@@ -1,7 +1,7 @@
-#include "parser.h"
+#include "Parser.h"
 #include <algorithm>
 
-object3D parserOBJ::parse(string filename)
+Object3D parserOBJ::parse(string filename)
 {
     string line;
     fstream fs;
@@ -16,7 +16,7 @@ object3D parserOBJ::parse(string filename)
         stringstream ss(line);
         string temp;
         while (ss >> temp)
-            t.push_back(temp);  
+            t.push_back(temp);
 
         if(t[0] == "v") {
             GLdb3 vertice;
@@ -39,7 +39,7 @@ object3D parserOBJ::parse(string filename)
 
             for(int i = 1; i < t.size(); i++) {
                 replace(t[i].begin(), t[i].end(), '/', ' ');
-                
+
                 stringstream ssaux(t[i]);
                 vector<string> values;
                 while(ssaux >> temp)
@@ -79,9 +79,9 @@ object3D parserOBJ::parse(string filename)
                     }
                 }
 
-                
+
             }
-            
+
             faces.push_back(face);
             normals.push_back(normal);
             texture.push_back(textura);
@@ -89,5 +89,5 @@ object3D parserOBJ::parse(string filename)
     }
     fs.close();
 
-    return object3D(vertices, vNormals, vTexture, faces, normals, texture);
+    return Object3D(vertices, vNormals, vTexture, faces, normals, texture);
 };

@@ -5,8 +5,8 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
-#include "include/object3D.h"
-#include "include/parser.h"
+#include "include/Object3D.h"
+#include "include/Parser.h"
 #include "include/globalVariables.cpp"
 #include "include/environment.cpp"
 

@@ -6,11 +6,11 @@ using namespace std;
 GLsizei view_w = 500, view_h = 500;	//	Variaveis auxiliares de tela
 
 //	----------------- Modelos -----------------
-object3D submarino;	                                    //	Modelo 3D do submarino
-vector<object3D> navio;	                                //	Modelo 3D de navio
-vector<object3D> helicoptero;                           //	Modelo 3D de helicoptero
-vector<object3D> peixe;	                                //	Modelo 3D de peixe
-vector<object3D> tubarao;	                            //	Modelo 3D de tubarao
+Object3D submarino;	                                    //	Modelo 3D do submarino
+vector<Object3D> navio;	                                //	Modelo 3D de navio
+vector<Object3D> helicoptero;                           //	Modelo 3D de helicoptero
+vector<Object3D> peixe;	                                //	Modelo 3D de peixe
+vector<Object3D> tubarao;	                            //	Modelo 3D de tubarao
 vector<GLfloat> lDirection;                             //  Luz direcionada
 vector<GLfloat> lPosition;                              //  Luz direcionada
 const vector<GLfloat> spotlight{0.8, 0.8, 0.8, 1.0};    //  Luz direcionada

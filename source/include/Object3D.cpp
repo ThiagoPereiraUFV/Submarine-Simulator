@@ -1,6 +1,6 @@
-#include "object3D.h"
+#include "Object3D.h"
 
-object3D::object3D(const vector<GLdb3> &_v_list, const vector<GLdb3> &_vn_list, const vector<GLdb3> &_vt_list, const vector<GLint3> &_f_list, const vector<GLint3> &_n_list, const vector<GLint3> &_t_list)
+Object3D::Object3D(const vector<GLdb3> &_v_list, const vector<GLdb3> &_vn_list, const vector<GLdb3> &_vt_list, const vector<GLint3> &_f_list, const vector<GLint3> &_n_list, const vector<GLint3> &_t_list)
 {
     V = _v_list;
     VN = _vn_list;
@@ -13,7 +13,7 @@ object3D::object3D(const vector<GLdb3> &_v_list, const vector<GLdb3> &_vn_list, 
     rot = 0.0;
 };
 
-object3D::object3D(const object3D & obj)
+Object3D::Object3D(const Object3D & obj)
 {
     V = vector<GLdb3>();
     VN = vector<GLdb3>();
@@ -27,7 +27,7 @@ object3D::object3D(const object3D & obj)
     *this = obj;
 }
 
-object3D & object3D::operator=(const object3D & obj)
+Object3D & Object3D::operator=(const Object3D & obj)
 {
     V = obj.getVertices();
     VN = obj.getVNormals();
@@ -42,37 +42,37 @@ object3D & object3D::operator=(const object3D & obj)
     color.z = obj.color.z;
 };
 
-vector<GLdb3> object3D::getVertices() const
+vector<GLdb3> Object3D::getVertices() const
 {
     return V;
 }
 
-vector<GLdb3> object3D::getVNormals() const
+vector<GLdb3> Object3D::getVNormals() const
 {
     return VN;
 }
 
-vector<GLdb3> object3D::getVTexture() const
+vector<GLdb3> Object3D::getVTexture() const
 {
     return VT;
 }
 
-vector<GLint3> object3D::getFaces() const
+vector<GLint3> Object3D::getFaces() const
 {
     return F;
 }
 
-vector<GLint3> object3D::getNormals() const
+vector<GLint3> Object3D::getNormals() const
 {
     return N;
 }
 
-vector<GLint3> object3D::getTexture() const
+vector<GLint3> Object3D::getTexture() const
 {
     return T;
 }
 
-void object3D::draw() const
+void Object3D::draw() const
 {
     glPushMatrix();
         glColor3f(color.x, color.y, color.z);
@@ -95,7 +95,7 @@ void object3D::draw() const
 };
 
 
-void object3D::justDraw() const
+void Object3D::justDraw() const
 {
     //glPushMatrix();
         glColor3f(color.x, color.y, color.z);
@@ -122,12 +122,12 @@ void object3D::justDraw() const
 	//glPopMatrix();
 };
 
-GLdb3 object3D::getPos() const
+GLdb3 Object3D::getPos() const
 {
     return pos;
 };
 
-void object3D::setPos(const GLdb3 & pos)
+void Object3D::setPos(const GLdb3 & pos)
 {
     this->pos.x = pos.x;
     this->pos.y = pos.y;
@@ -136,19 +136,19 @@ void object3D::setPos(const GLdb3 & pos)
     return;
 };
 
-void object3D::setRot(const GLdouble & rot)
+void Object3D::setRot(const GLdouble & rot)
 {
     this->rot = rot;
     return;
 };
 
-GLdouble object3D::getRot() const
+GLdouble Object3D::getRot() const
 {
     return rot;
 };
 
 
-void object3D::setColor(const GLdb3 & color)
+void Object3D::setColor(const GLdb3 & color)
 {
     this->color.x = color.x;
     this->color.y = color.y;

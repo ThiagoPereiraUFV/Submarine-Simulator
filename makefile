@@ -7,10 +7,10 @@ Simulator : Object3D.o Parser.o
 	g++ ./source/main.cpp $(oglFlags) ./bin/*.o -o simulator.out
 
 Object3D.o :
-	g++ $(includePath)/object3D.cpp $(extraFlags) -o ./bin/Object3D.o
+	g++ $(includePath)/Object3D.cpp $(extraFlags) -o ./bin/Object3D.o
 
 Parser.o :
-	g++ $(includePath)/parser.cpp $(extraFlags) -o ./bin/Parser.o
+	g++ $(includePath)/Parser.cpp $(extraFlags) -o ./bin/Parser.o
 
 start :
 	./simulator.out

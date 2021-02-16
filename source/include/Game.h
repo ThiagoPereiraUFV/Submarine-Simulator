@@ -6,8 +6,13 @@
 #include <cstdlib>
 #include <unordered_map>
 #include <vector>
+#include <cmath>
 #include <functional>
 #include <string>
+#include "Object3D.h"
+#include "Parser.h"
+
+#define PI 3.1415	//	Approximation to PI
 
 // -------- Initial window size --------
 
@@ -16,7 +21,27 @@
 
 class Game {
 	private:
-		static GLfloat view_w, view_h;	//  Half of game window width and height size
+		static GLsizei view_w, view_h;	//  Half of game window width and height size
+		static bool started, started1;	//  State variables
+		static bool help;	//  Help box state variable
+		static bool light, lightMode, l1, l2;	//  Lights state variables
+		static const vector<GLfloat> spotlight;	//	Spotlight position
+		static const vector<GLfloat> sunlight;	//	Sunlight position
+		static vector<GLfloat> lPosition, lDirection;
+		static const GLfloat c1 = 0.003, c2 = 0.008, c3 = 0.20;	//	Constant aux variables
+		static vector<GLdouble> viewer, center;	//	Viewers position and center
+		static bool fp;	//	Camera state variable
+		static bool upSub, upA, upShip;	//	Aux variables
+		static int dispSub, dispA, dispShip;	//	Aux variables
+		static GLint nSeaAnimals, nShips, nHelis;	//  Objects quantities
+		static vector<GLdb3> fishesPos, sharksPos, helisPos, shipsPos;	//	Objects positions
+		static Object3D submarine;	//	Vector containing game submarine
+		static GLdouble rotation;	//	Submarine rotation
+		static vector<Object3D> ships;	//	Vector containing all game ships
+		static vector<Object3D> fishes;	//	Vector containing all game fishes
+		static vector<Object3D> sharks;	//	Vector containing all game sharks
+		static vector<Object3D> helis;	//	Vector containing all game helicopters
+		static vector<vector<GLfloat>> verticesSea;	//	Vertices representing sea
 	public:
 		static void game(int, char**);
 		static void init();
@@ -25,6 +50,15 @@ class Game {
 		static void reshape(const GLsizei, const GLsizei);
 		static void SpecialKeys(const int, const int, const int);
 		static void HandleKeyboard(const unsigned char, const int, const int);
+		static void drawAxes();
+		static void drawFaceSea(const GLint, const GLint, const GLint, const GLint);
+		static void drawSea();
+		static void drawSun();
+		static void subAnimation(const int);
+		static void subAnimalsAnimation(const int);
+		static void shipAnimation(const int);
+		static void drawText(const GLdb3,const string);
+		static void drawHelpMenu();
 };
 
 #endif
