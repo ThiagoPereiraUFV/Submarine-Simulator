@@ -1,7 +1,6 @@
 #include "Object3D.h"
 
-Object3D::Object3D(const vector<GLdb3> &_v_list, const vector<GLdb3> &_vn_list, const vector<GLdb3> &_vt_list, const vector<GLint3> &_f_list, const vector<GLint3> &_n_list, const vector<GLint3> &_t_list)
-{
+Object3D::Object3D(const vector<GLdb3> &_v_list, const vector<GLdb3> &_vn_list, const vector<GLdb3> &_vt_list, const vector<GLint3> &_f_list, const vector<GLint3> &_n_list, const vector<GLint3> &_t_list) {
     V = _v_list;
     VN = _vn_list;
     VT = _vt_list;
@@ -13,8 +12,7 @@ Object3D::Object3D(const vector<GLdb3> &_v_list, const vector<GLdb3> &_vn_list, 
     rot = 0.0;
 };
 
-Object3D::Object3D(const Object3D & obj)
-{
+Object3D::Object3D(const Object3D & obj) {
     V = vector<GLdb3>();
     VN = vector<GLdb3>();
     VT = vector<GLdb3>();
@@ -27,8 +25,7 @@ Object3D::Object3D(const Object3D & obj)
     *this = obj;
 }
 
-Object3D & Object3D::operator=(const Object3D & obj)
-{
+Object3D & Object3D::operator=(const Object3D & obj) {
     V = obj.getVertices();
     VN = obj.getVNormals();
     VT = obj.getVTexture();
@@ -42,61 +39,51 @@ Object3D & Object3D::operator=(const Object3D & obj)
     color.z = obj.color.z;
 };
 
-vector<GLdb3> Object3D::getVertices() const
-{
+vector<GLdb3> Object3D::getVertices() const {
     return V;
 }
 
-vector<GLdb3> Object3D::getVNormals() const
-{
+vector<GLdb3> Object3D::getVNormals() const {
     return VN;
 }
 
-vector<GLdb3> Object3D::getVTexture() const
-{
+vector<GLdb3> Object3D::getVTexture() const {
     return VT;
 }
 
-vector<GLint3> Object3D::getFaces() const
-{
+vector<GLint3> Object3D::getFaces() const {
     return F;
 }
 
-vector<GLint3> Object3D::getNormals() const
-{
+vector<GLint3> Object3D::getNormals() const {
     return N;
 }
 
-vector<GLint3> Object3D::getTexture() const
-{
+vector<GLint3> Object3D::getTexture() const {
     return T;
 }
 
-void Object3D::draw() const
-{
+void Object3D::draw() const {
     glPushMatrix();
-        glColor3f(color.x, color.y, color.z);
-        glTranslated(pos.x,pos.y,pos.z);
-        glRotated(-rot,0.0,1.0,0.0);
+    glColor3f(color.x, color.y, color.z);
+    glTranslated(pos.x,pos.y,pos.z);
+    glRotated(-rot,0.0,1.0,0.0);
 
-        for(unsigned long i = 0; i < F.size(); i++)
-        {
-            glBegin(GL_TRIANGLES);
-                glNormal3d(VN[N[i].x].x, VN[N[i].x].y, VN[N[i].x].z);
-                glVertex3d(V[F[i].x].x, V[F[i].x].y, V[F[i].x].z);
-                glNormal3d(VN[N[i].y].x, VN[N[i].y].y, VN[N[i].y].z);
-                glVertex3d(V[F[i].y].x, V[F[i].y].y, V[F[i].y].z);
-                glNormal3d(VN[N[i].z].x, VN[N[i].z].y, VN[N[i].z].z);
-                glVertex3d(V[F[i].z].x, V[F[i].z].y, V[F[i].z].z);
-            glEnd();
-        }
+    for(unsigned long i = 0; i < F.size(); i++) {
+        glBegin(GL_TRIANGLES);
+            glNormal3d(VN[N[i].x].x, VN[N[i].x].y, VN[N[i].x].z);
+            glVertex3d(V[F[i].x].x, V[F[i].x].y, V[F[i].x].z);
+            glNormal3d(VN[N[i].y].x, VN[N[i].y].y, VN[N[i].y].z);
+            glVertex3d(V[F[i].y].x, V[F[i].y].y, V[F[i].y].z);
+            glNormal3d(VN[N[i].z].x, VN[N[i].z].y, VN[N[i].z].z);
+            glVertex3d(V[F[i].z].x, V[F[i].z].y, V[F[i].z].z);
+        glEnd();
+    }
     glPopMatrix();
 
 };
 
-
-void Object3D::justDraw() const
-{
+void Object3D::justDraw() const {
     //glPushMatrix();
         glColor3f(color.x, color.y, color.z);
         glTranslated(pos.x,pos.y,pos.z);

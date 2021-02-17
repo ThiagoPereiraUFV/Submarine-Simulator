@@ -1,5 +1,19 @@
 #include "Game.h"
 
+GLsizei Game::view_w, Game::view_h;
+bool Game::started = false, Game::started1 = false, Game::help = false, Game::fp = false;
+bool Game::light = true, Game::lightMode = false, Game::l1 = true, Game::l2 = true;
+const vector<GLfloat> Game::spotlight{0.8, 0.8, 0.8, 1.0};
+const vector<GLfloat> Game::sunlight{0.8, 0.8, 0.8, 1.0};
+vector<GLdouble> Game::viewer, Game::center;
+bool Game::upSub = true, Game::upA = true, Game::upShip = true;
+int Game::dispSub = 0, Game::dispA = 0, Game::dispShip = 0;
+vector<GLdb3> Game::fishesPos, Game::sharksPos, Game::helisPos, Game::shipsPos;
+Object3D Game::submarine;
+GLdouble Game::rotation;
+vector<Object3D> Game::ships, Game::fishes, Game::sharks, Game::helis;
+vector<vector<GLfloat>> Game::verticesSea;
+
 //	Set up OpenGl and start game
 void Game::game(int argc, char** argv) {
 	glutInit(&argc, argv);
@@ -20,11 +34,11 @@ void Game::init() {
 		(glutGet(GLUT_SCREEN_WIDTH) - WINDOW_WIDTH) / 2,
 		(glutGet(GLUT_SCREEN_HEIGHT) - WINDOW_HEIGHT) / 2
 	);
-	glutCreateWindow("Simulador de submarine by Wallace e Thiago");
+	glutCreateWindow("Simulador de submarino by Wallace e Thiago");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 	//glutFullScreen();
 
-	//	Ativando e inicializando funcionalidades
+	//	Enabling features
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	glEnable(GL_LIGHTING);
@@ -34,9 +48,9 @@ void Game::init() {
 	glEnable(GL_DEPTH_TEST);
 	srand(time(NULL));
 
-	//	Configurando luzes
-	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);   //	Sol
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);  //	Luz direcionada
+	//	Setting up lights
+	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);	//	Sun
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);	//	Spotlight
 
 	//	Carregando modelos
 	submarine = parserOBJ::parse("models/submarine.obj");
@@ -169,8 +183,8 @@ void Game::display() {
 	GLdb3 deslocamento = submarine.getPos();
 	GLdouble rot = submarine.getRot();
 
-	lPosition = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
-	lDirection = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
+	const vector<GLfloat> lPosition = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
+	const vector<GLfloat> lDirection = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
 	glLightfv(GL_LIGHT1, GL_POSITION, &lPosition[0]);  //	Luz direcionada
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDirection[0]);  //	Luz direcionada
 

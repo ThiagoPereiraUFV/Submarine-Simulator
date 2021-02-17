@@ -1,13 +1,15 @@
 #ifndef OBJ_H
 #define OBJ_H
 
+#include <GL/gl.h>
+#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <vector>
 #include "util.cpp"
 
 using namespace std;
 
-class Object3D
-{
+class Object3D {
     public:
         GLdouble getRot() const;
         void setRot(const GLdouble & rot);
@@ -34,7 +36,5 @@ class Object3D
         GLdouble rot; //rotação atual do objeto
         GLdb3 color; //cor do objeto
 };
-
-
 
 #endif
