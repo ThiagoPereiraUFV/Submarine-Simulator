@@ -34,7 +34,7 @@ void Game::init() {
 		(glutGet(GLUT_SCREEN_WIDTH) - WINDOW_WIDTH) / 2,
 		(glutGet(GLUT_SCREEN_HEIGHT) - WINDOW_HEIGHT) / 2
 	);
-	glutCreateWindow("Simulador de submarino by Wallace e Thiago");
+	glutCreateWindow("Submarine simulator by Wallace e Thiago");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 	//glutFullScreen();
 
@@ -52,84 +52,67 @@ void Game::init() {
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);	//	Sun
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);	//	Spotlight
 
-	//	Carregando modelos
+	//	Loading submarine
 	submarine = parserOBJ::parse("models/submarine.obj");
 	GLdb3 color, pos;
 	color.x = (GLdouble)(30) / (GLdouble)255;
 	color.y = (GLdouble)(50) / (GLdouble)255;
 	color.z = (GLdouble)(20) / (GLdouble)255;
 	submarine.setColor(color);
+
+	//	Loading sea animals
 	for(int i = 0; i < nSeaAnimals; i++) {
+		//	Fishes
+		const int dist = 400;
 		fishes.push_back(parserOBJ::parse("models/fish1.obj"));
-		sharks.push_back(parserOBJ::parse("models/shark1.obj"));
-		const int dist = 200;
-		if(rand() % 2 == 0)
-			pos.x = -(rand() % dist);
-		else
-			pos.x = rand() % dist;
 
-		if(rand() % 2 == 0)
-			pos.z = -(rand() % dist);
-		else
-			pos.z = rand() % dist;
-
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = -(rand() % dist);
 		fishesPos.push_back(pos);
+
 		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.z = (GLdouble)(rand() % 255) / (GLdouble)255;
 		fishes[i].setColor(color);
 
-		if(rand() % 2 == 0)
-			pos.x = -(rand() % dist) - 5;
-		else
-			pos.x = rand() % dist;
+		//	Shark
+		sharks.push_back(parserOBJ::parse("models/shark1.obj"));
 
-		if(rand() % 2 == 0)
-			pos.z = -(rand() % dist);
-		else
-			pos.z = rand() % dist;
-
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = -(rand() % dist) - 5;
 		sharksPos.push_back(pos);
+
 		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.z = (GLdouble)(rand() % 255) / (GLdouble)255;
 		sharks[i].setColor(color);
 	}
+
+	//	Loading ships
 	for(int i = 0; i < nShips; i++) {
-		ships.push_back(parserOBJ::parse("models/ship1.obj"));
 		const int dist = 1000;
-		if(rand() % 2 == 0)
-			pos.x = -(rand() % dist);
-		else
-			pos.x = rand() % dist;
+		ships.push_back(parserOBJ::parse("models/ship1.obj"));
 
-		if(rand() % 2 == 0)
-			pos.z = -(rand() % dist);
-		else
-			pos.z = rand() % dist;
-
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = 0.0;
 		shipsPos.push_back(pos);
-		double c = rand() % 255;
+
+		const double c = rand() % 255;
 		color.x = color.y = color.z = (GLdouble)c / (GLdouble)255;
 		ships[i].setColor(color);
 	}
+
+	//	Loading helicopters
 	for(int i = 0; i < nHelis; i++) {
+		const int dist = 1000;
 		helis.push_back(parserOBJ::parse("models/helicopter.obj"));
-		const int dist = 500;
-		if(rand() % 2 == 0)
-			pos.x = -(rand() % dist);
-		else
-			pos.x = rand() % dist;
 
-		if(rand() % 2 == 0)
-			pos.z = -(rand() % dist);
-		else
-			pos.z = rand() % dist;
-
-		pos.y = rand() % 10 + 20;
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.y = rand() % 100 + 20;
 		helisPos.push_back(pos);
 	}
 }

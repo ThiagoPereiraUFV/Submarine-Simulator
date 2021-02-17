@@ -18,8 +18,8 @@
 
 // -------- Initial window size --------
 
-#define WINDOW_WIDTH 500	//	Width
-#define WINDOW_HEIGHT 600	//	Height
+#define WINDOW_WIDTH 600	//	Width
+#define WINDOW_HEIGHT 500	//	Height
 
 class Game {
 	private:
