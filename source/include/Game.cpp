@@ -49,8 +49,8 @@ void Game::init() {
 	srand(time(NULL));
 
 	//	Setting up lights
-	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);	//	Sun
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);	//	Spotlight
+	glLightfv(GL_LIGHT0, GL_AMBIENT, &sunlight[0]);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, &spotlight[0]);
 
 	//	Loading submarine
 	submarine = parserOBJ::parse("models/submarine.obj");
@@ -112,7 +112,7 @@ void Game::init() {
 
 		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = rand() % 100 + 20;
+		pos.y = rand() % 100 + 10;
 		helisPos.push_back(pos);
 	}
 }
@@ -120,14 +120,17 @@ void Game::init() {
 void Game::updateVariables(const GLsizei w, const GLsizei h) {
 	view_w = w;
 	view_h = h;
-	verticesSea = {{-c3 * view_h, -c3 * view_h, c3 * view_h},
-	               {-c3 * view_h, c3 * view_h, c3 * view_h},
-	               {c3 * view_h, c3 * view_h, c3 * view_h},
-	               {c3 * view_h, -c3 * view_h, c3 * view_h},
-	               {-c3 * view_h, -c3 * view_h, -c3 * view_h},
-	               {-c3 * view_h, c3 * view_h, -c3 * view_h},
-	               {c3 * view_h, c3 * view_h, -c3 * view_h},
-	               {c3 * view_h, -c3 * view_h, -c3 * view_h}};
+	verticesSea = {
+		{-c3 * view_h, -c3 * view_h, c3 * view_h},
+		{-c3 * view_h, c3 * view_h, c3 * view_h},
+		{c3 * view_h, c3 * view_h, c3 * view_h},
+		{c3 * view_h, -c3 * view_h, c3 * view_h},
+		{-c3 * view_h, -c3 * view_h, -c3 * view_h},
+		{-c3 * view_h, c3 * view_h, -c3 * view_h},
+		{c3 * view_h, c3 * view_h, -c3 * view_h},
+		{c3 * view_h, -c3 * view_h, -c3 * view_h}
+	};
+
 	if(!started) {
 		viewer = {0.0, 2.5 * c1 * view_h + 10, 5.0 * c1 * view_h + 10};
 		GLdb3 pos = submarine.getPos();
@@ -141,56 +144,53 @@ void Game::updateVariables(const GLsizei w, const GLsizei h) {
 
 //	Resize game elements to keep ratio
 void Game::reshape(const GLsizei w, const GLsizei h) {
-	//	Ajustando modo de exibicao dos objetos na tela
+	if(w < WINDOW_WIDTH) {
+		glutReshapeWindow(WINDOW_WIDTH, h);
+	}
+
 	updateVariables(w, h);
 	glViewport(0, 0, w, h);
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(70.0, (GLfloat)view_w / (GLfloat)view_h, 2.0, view_h * 2);  // projecao perspectiva
+	gluPerspective(70.0, (GLfloat)view_w / (GLfloat)view_h, 2.0, view_h * 2);
 	glMatrixMode(GL_MODELVIEW);
 	glutPostRedisplay();
 }
 
 //	Render game elements
 void Game::display() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // limpa a janela
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//	Setting up observer camera
 	glLoadIdentity();
 	gluLookAt(
-	    viewer[0], (fp) ? viewer[1] - 5 : viewer[1],
-	    (fp) ? viewer[2] - 22 : viewer[2],  // define posicao do observador
-	    center[0], (fp) ? center[1] + 5 : center[1] + 10,
-	    (fp) ? center[2] - 22 : center[2] + 2,  // ponto de interesse (foco)
-	    0.0, 1.0, 0.0);                         // vetor de "view up"
+	    viewer[0], (fp) ? viewer[1] - 5 : viewer[1], (fp) ? viewer[2] - 22 : viewer[2],
+	    center[0], (fp) ? center[1] + 5 : center[1] + 10, (fp) ? center[2] - 22 : center[2] + 2,
+	    0.0, 1.0, 0.0	//	View up vector
+	);
 
-	GLdb3 deslocamento = submarine.getPos();
-	GLdouble rot = submarine.getRot();
+	const GLdb3 disp = submarine.getPos();
+	const GLdouble rot = submarine.getRot();
 
-	const vector<GLfloat> lPosition = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
-	const vector<GLfloat> lDirection = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
-	glLightfv(GL_LIGHT1, GL_POSITION, &lPosition[0]);  //	Luz direcionada
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDirection[0]);  //	Luz direcionada
+	//	Setting spotlight
+	const vector<GLfloat> lPos = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
+	const vector<GLfloat> lDir = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
+	glLightfv(GL_LIGHT1, GL_POSITION, &lPos[0]);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDir[0]);
 
-	glTranslated(deslocamento.x, deslocamento.y, deslocamento.z);
+	glTranslated(disp.x, disp.y, disp.z);
 	glRotated(rot, 0.0, 1.0, 0.0);
-	glTranslated(-deslocamento.x, -deslocamento.y, -deslocamento.z);
-	drawSun();
-	// drawAxes();	//	Desenha os eixos XYZ
-	drawSea(); /*
-	 glColor3d(1.0, 1.0, 0.0);
-	 glPushMatrix();
-	     glutSolidSphere(30, 100, 100);
-	 glPopMatrix();*/
+	glTranslated(-disp.x, -disp.y, -disp.z);
 
-	glPushMatrix();
+	//drawAxes();
+	drawSun();
+	drawSea();
+
 	for(int i = 0; i < ships.size(); i++) {
 		if(!started1)
 			ships[i].setPos(shipsPos[i]);
-		glPushMatrix();
 		ships[i].justDraw();
-		glPopMatrix();
 	}
-	glPopMatrix();
 
 	for(int i = 0; i < helis.size(); i++) {
 		if(!started1)
@@ -207,11 +207,7 @@ void Game::display() {
 		sharks[i].draw();
 	}
 
-	glPushMatrix();
-
 	submarine.justDraw();
-
-	glPopMatrix();
 
 	if(help)
 		drawHelpMenu();
@@ -220,7 +216,7 @@ void Game::display() {
 		started1 = true;
 
 	glFlush();
-	glutSwapBuffers();  // usando double buffer (para evitar 'flicker')
+	glutSwapBuffers();
 }
 
 //	Handle arrow keys events
@@ -269,7 +265,7 @@ void Game::SpecialKeys(const int key, const int x, const int y) {
 
 //	Handle enter, esc e spacebar keys events
 void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
-	double cos_rot = cos(rotation), sin_rot = sin(rotation);
+	const double cos_rot = cos(rotation), sin_rot = sin(rotation);
 	switch(key) {
 		case 'W':
 		case 'w':
@@ -361,32 +357,32 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 	glutPostRedisplay();
 }
 
-void drawAxes() {
+void Game::drawAxes() {
 	const GLfloat length = 1000;
 	glPushMatrix();
-		glColor3f(1.0, 0.0, 0.0);
-		glBegin(GL_LINES);
-			glVertex3f(0.0, 0.0, length);
-			glVertex3f(0.0, 0.0, -length);
-			glVertex3f(0.0, length, 0.0);
-			glVertex3f(0.0, -length, 0.0);
-			glVertex3f(length, 0.0, 0.0);
-			glVertex3f(-length, 0.0, 0.0);
-		glEnd();
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, length);
+		glVertex3f(0.0, 0.0, -length);
+		glVertex3f(0.0, length, 0.0);
+		glVertex3f(0.0, -length, 0.0);
+		glVertex3f(length, 0.0, 0.0);
+		glVertex3f(-length, 0.0, 0.0);
+	glEnd();
 	glPopMatrix();
 }
 
 void Game::drawFaceSea(const GLint a, const GLint b, const GLint c, const GLint d) {
 	glColor4f(0.0, 0.0, 1.0, 0.9);
 	glPushMatrix();
-		glTranslatef(viewer[0], -c3*view_h, viewer[2]);
-		glScalef(3.83, 1.0, 3.83);
-		glBegin(GL_QUADS);
-			glVertex3fv(&verticesSea[a][0]);
-			glVertex3fv(&verticesSea[b][0]);
-			glVertex3fv(&verticesSea[c][0]);
-			glVertex3fv(&verticesSea[d][0]);
-		glEnd();
+	glTranslatef(viewer[0], -c3*view_h, viewer[2]);
+	glScalef(3.83, 1.0, 3.83);
+	glBegin(GL_QUADS);
+		glVertex3fv(&verticesSea[a][0]);
+		glVertex3fv(&verticesSea[b][0]);
+		glVertex3fv(&verticesSea[c][0]);
+		glVertex3fv(&verticesSea[d][0]);
+	glEnd();
 	glPopMatrix();
 }
 
