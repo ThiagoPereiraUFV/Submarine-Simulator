@@ -29,13 +29,12 @@ class Game {
 		static bool light, lightMode, l1, l2;	//  Lights state variables
 		static const vector<GLfloat> spotlight;	//	Spotlight position
 		static const vector<GLfloat> sunlight;	//	Sunlight position
-		static constexpr GLfloat c1 = 0.003, c2 = 0.008, c3 = 0.20;	//	Constant aux variables
+		static constexpr GLfloat c1 = 0.003, c2 = 0.008;	//	Constant aux variables
 		static vector<GLdouble> viewer, center;	//	Viewers position and center
 		static bool fp;	//	Camera state variable
 		static bool upSub, upA, upShip;	//	Aux variables
 		static int dispSub, dispA, dispShip;	//	Aux variables
-		static const GLint nSeaAnimals = 20, nShips = 10, nHelis = 7;	//  Objects quantities
-		static vector<GLdb3> fishesPos, sharksPos, helisPos, shipsPos;	//	Objects positions
+		static const GLint nSeaAnimals = 20, nShips = 5, nHelis = 7;	//  Objects quantities
 		static Object3D submarine;	//	Vector containing game submarine
 		static GLdouble rotation;	//	Submarine rotation
 		static vector<Object3D> ships;	//	Vector containing all game ships

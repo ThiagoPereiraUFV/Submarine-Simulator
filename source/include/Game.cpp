@@ -1,6 +1,6 @@
 #include "Game.h"
 
-GLsizei Game::view_w, Game::view_h;
+GLsizei Game::view_w = WINDOW_WIDTH, Game::view_h = WINDOW_HEIGHT;
 bool Game::started = false, Game::started1 = false, Game::help = false, Game::fp = false;
 bool Game::light = true, Game::lightMode = false, Game::l1 = true, Game::l2 = true;
 const vector<GLfloat> Game::spotlight{0.8, 0.8, 0.8, 1.0};
@@ -8,7 +8,6 @@ const vector<GLfloat> Game::sunlight{0.8, 0.8, 0.8, 1.0};
 vector<GLdouble> Game::viewer, Game::center;
 bool Game::upSub = true, Game::upA = true, Game::upShip = true;
 int Game::dispSub = 0, Game::dispA = 0, Game::dispShip = 0;
-vector<GLdb3> Game::fishesPos, Game::sharksPos, Game::helisPos, Game::shipsPos;
 Object3D Game::submarine;
 GLdouble Game::rotation;
 vector<Object3D> Game::ships, Game::fishes, Game::sharks, Game::helis;
@@ -63,13 +62,13 @@ void Game::init() {
 	//	Loading sea animals
 	for(int i = 0; i < nSeaAnimals; i++) {
 		//	Fishes
-		const int dist = 400;
+		const int dist = view_h;
 		fishes.push_back(parserOBJ::parse("models/fish1.obj"));
 
 		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = -(rand() % dist);
-		fishesPos.push_back(pos);
+		fishes[i].setPos(pos);
 
 		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
@@ -82,7 +81,7 @@ void Game::init() {
 		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = -(rand() % dist) - 5;
-		sharksPos.push_back(pos);
+		sharks[i].setPos(pos);
 
 		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
@@ -97,8 +96,8 @@ void Game::init() {
 
 		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = 0.0;
-		shipsPos.push_back(pos);
+		pos.y = (GLdouble)0.0;
+		ships[i].setPos(pos);
 
 		const double c = rand() % 255;
 		color.x = color.y = color.z = (GLdouble)c / (GLdouble)255;
@@ -112,8 +111,8 @@ void Game::init() {
 
 		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = rand() % 100 + 10;
-		helisPos.push_back(pos);
+		pos.y = (rand() % (dist/5)) + 50;
+		helis[i].setPos(pos);
 	}
 }
 
@@ -121,19 +120,19 @@ void Game::updateVariables(const GLsizei w, const GLsizei h) {
 	view_w = w;
 	view_h = h;
 	verticesSea = {
-		{-c3 * view_h, -c3 * view_h, c3 * view_h},
-		{-c3 * view_h, c3 * view_h, c3 * view_h},
-		{c3 * view_h, c3 * view_h, c3 * view_h},
-		{c3 * view_h, -c3 * view_h, c3 * view_h},
-		{-c3 * view_h, -c3 * view_h, -c3 * view_h},
-		{-c3 * view_h, c3 * view_h, -c3 * view_h},
-		{c3 * view_h, c3 * view_h, -c3 * view_h},
-		{c3 * view_h, -c3 * view_h, -c3 * view_h}
+		{-(GLfloat)view_h, -(GLfloat)view_h, (GLfloat)view_h},
+		{-(GLfloat)view_h, (GLfloat)view_h, (GLfloat)view_h},
+		{(GLfloat)view_h, (GLfloat)view_h, (GLfloat)view_h},
+		{(GLfloat)view_h, -(GLfloat)view_h, (GLfloat)view_h},
+		{-(GLfloat)view_h, -(GLfloat)view_h, -(GLfloat)view_h},
+		{-(GLfloat)view_h, (GLfloat)view_h, -(GLfloat)view_h},
+		{(GLfloat)view_h, (GLfloat)view_h, -(GLfloat)view_h},
+		{(GLfloat)view_h, -(GLfloat)view_h, -(GLfloat)view_h}
 	};
 
 	if(!started) {
 		viewer = {0.0, 2.5 * c1 * view_h + 10, 5.0 * c1 * view_h + 10};
-		GLdb3 pos = submarine.getPos();
+		const GLdb3 pos = submarine.getPos();
 		center = {pos.x, pos.y, pos.z};
 		started = true;
 		subAnimation(0);
@@ -152,7 +151,7 @@ void Game::reshape(const GLsizei w, const GLsizei h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(70.0, (GLfloat)view_w / (GLfloat)view_h, 2.0, view_h * 2);
+	gluPerspective(70.0, (GLfloat)view_w / (GLfloat)view_h, 2.0, view_h * 6);
 	glMatrixMode(GL_MODELVIEW);
 	glutPostRedisplay();
 }
@@ -187,27 +186,19 @@ void Game::display() {
 	drawSea();
 
 	for(int i = 0; i < ships.size(); i++) {
-		if(!started1)
-			ships[i].setPos(shipsPos[i]);
-		ships[i].justDraw();
+		ships[i].draw();
 	}
 
 	for(int i = 0; i < helis.size(); i++) {
-		if(!started1)
-			helis[i].setPos(helisPos[i]);
 		helis[i].draw();
 	}
 
 	for(int i = 0; i < fishes.size() && i < sharks.size(); i++) {
-		if(!started1)
-			fishes[i].setPos(fishesPos[i]);
 		fishes[i].draw();
-		if(!started1)
-			sharks[i].setPos(sharksPos[i]);
 		sharks[i].draw();
 	}
 
-	submarine.justDraw();
+	submarine.draw();
 
 	if(help)
 		drawHelpMenu();
@@ -230,7 +221,7 @@ void Game::SpecialKeys(const int key, const int x, const int y) {
 			}
 			break;
 		case GLUT_KEY_DOWN:
-			if(center[1] >= -180.0) {
+			if(center[1] >= -view_h) {
 				viewer[1] -= 1.0;
 				center[1] -= 1.0;
 			}
@@ -323,7 +314,7 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 				lightMode = true;
 			}
 			break;
-		case 49:
+		case '1':
 			if(l1 && light) {
 				glDisable(GL_LIGHT0);
 				l1 = false;
@@ -336,7 +327,7 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 				glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 			}
 			break;
-		case 50:
+		case '2':
 			if(l2 && light) {
 				glDisable(GL_LIGHT1);
 				l2 = false;
@@ -375,7 +366,7 @@ void Game::drawAxes() {
 void Game::drawFaceSea(const GLint a, const GLint b, const GLint c, const GLint d) {
 	glColor4f(0.0, 0.0, 1.0, 0.9);
 	glPushMatrix();
-	glTranslatef(viewer[0], -c3*view_h, viewer[2]);
+	glTranslatef(viewer[0], -view_h, viewer[2]);
 	glScalef(3.83, 1.0, 3.83);
 	glBegin(GL_QUADS);
 		glVertex3fv(&verticesSea[a][0]);
@@ -500,6 +491,7 @@ void Game::shipAnimation(const int x) {
 		}
 		ct.x = ships[i].getPos().x + 0.5*sin(4.71239);
 		ct.z = ships[i].getPos().z + 0.5*cos(4.71239);
+		ct.y = ships[i].getPos().y;
 		ships[i].setPos(ct);
 	}
 	glutTimerFunc(100, shipAnimation, x);

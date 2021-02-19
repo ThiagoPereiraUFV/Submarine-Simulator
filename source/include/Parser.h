@@ -4,16 +4,17 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include "Object3D.h"
-#include "util.cpp" //contém declarações de tipos uteis : GLdb3, GLint3, etc
+#include "util.cpp"
 
-using namespace std;
-class parserOBJ
-{
+using std::string;
+using std::fstream;
+using std::stringstream;
+
+class parserOBJ {
     public:
         static Object3D parse(string filename);
     private:

@@ -1,8 +1,7 @@
 #include "Parser.h"
 #include <algorithm>
 
-Object3D parserOBJ::parse(string filename)
-{
+Object3D parserOBJ::parse(string filename) {
     string line;
     fstream fs;
     fs.open(filename.c_str());
