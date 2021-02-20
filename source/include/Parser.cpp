@@ -34,9 +34,8 @@ Object3D parserOBJ::parse(string filename) {
         }
         else if(t[0] == "f") {
             GLint3 face, normal, textura;
-            bool t_presence = false;
 
-            for(int i = 1; i < t.size(); i++) {
+            for(long unsigned int i = 1; i < t.size(); i++) {
                 replace(t[i].begin(), t[i].end(), '/', ' ');
 
                 stringstream ssaux(t[i]);

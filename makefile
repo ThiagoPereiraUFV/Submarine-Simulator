@@ -1,5 +1,5 @@
-optFlags = -Ofast -std=c++11 -w
-extraFlags = -c -w
+optFlags = -Ofast -std=c++11 -Wall
+extraFlags = -c -Wall
 oglFlags = $(optFlags) -lglut -lGL -lGLU -lm
 includePath = ./source/include
 

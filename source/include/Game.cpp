@@ -9,7 +9,6 @@ vector<GLdouble> Game::viewer, Game::center;
 bool Game::upSub = true, Game::upA = true, Game::upShip = true;
 int Game::dispSub = 0, Game::dispA = 0, Game::dispShip = 0;
 Object3D Game::submarine;
-GLdouble Game::rotation;
 vector<Object3D> Game::ships, Game::fishes, Game::sharks, Game::helis;
 vector<vector<GLfloat>> Game::verticesSea;
 
@@ -33,7 +32,7 @@ void Game::init() {
 		(glutGet(GLUT_SCREEN_WIDTH) - WINDOW_WIDTH) / 2,
 		(glutGet(GLUT_SCREEN_HEIGHT) - WINDOW_HEIGHT) / 2
 	);
-	glutCreateWindow("Submarine simulator by Wallace e Thiago");
+	glutCreateWindow("Submarine simulator by Wallace & Thiago");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 	//glutFullScreen();
 
@@ -169,7 +168,7 @@ void Game::display() {
 	);
 
 	const GLdb3 disp = submarine.getPos();
-	const GLdouble rot = submarine.getRot();
+	const GLdouble degRotation = submarine.getRot();
 
 	//	Setting spotlight
 	const vector<GLfloat> lPos = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
@@ -178,22 +177,22 @@ void Game::display() {
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDir[0]);
 
 	glTranslated(disp.x, disp.y, disp.z);
-	glRotated(rot, 0.0, 1.0, 0.0);
+	glRotated(degRotation, 0.0, 1.0, 0.0);
 	glTranslated(-disp.x, -disp.y, -disp.z);
 
 	//drawAxes();
 	drawSun();
 	drawSea();
 
-	for(int i = 0; i < ships.size(); i++) {
-		ships[i].draw();
+	for(const auto ship : ships) {
+		ship.draw();
 	}
 
-	for(int i = 0; i < helis.size(); i++) {
-		helis[i].draw();
+	for(const auto heli : helis) {
+		heli.draw();
 	}
 
-	for(int i = 0; i < fishes.size() && i < sharks.size(); i++) {
+	for(long unsigned int i = 0; i < fishes.size() && i < sharks.size(); i++) {
 		fishes[i].draw();
 		sharks[i].draw();
 	}
@@ -212,7 +211,7 @@ void Game::display() {
 
 //	Handle arrow keys events
 void Game::SpecialKeys(const int key, const int x, const int y) {
-	GLdouble rot = submarine.getRot();
+	GLdouble degRotation = submarine.getRot();
 	switch(key) {
 		case GLUT_KEY_UP:
 			if(center[1] < 0) {
@@ -227,57 +226,47 @@ void Game::SpecialKeys(const int key, const int x, const int y) {
 			}
 			break;
 		case GLUT_KEY_RIGHT:
-			rotation += 0.0872665;
-			if(rotation >= 2 * 3.1415)
-				rotation = 0;
-
-			rot += 5;
-			if(rot >= 360)
-				rot = 0;
+			degRotation += ROTATION;
+			if(degRotation >= 360)
+				degRotation = 0;
 			break;
 		case GLUT_KEY_LEFT:
-			rotation -= 0.0872665;
-			if(rotation <= 0)
-				rotation = 2 * PI;
-
-			rot -= 5;
-			if(rot <= 0)
-				rot = 360;
+			degRotation -= ROTATION;
+			if(degRotation <= 0)
+				degRotation = 360;
 			break;
 	}
 	GLdb3 ct;
 	ct.x = center[0];
 	ct.y = center[1];
 	ct.z = center[2];
-	submarine.setRot(rot);
+	submarine.setRot(degRotation);
 	submarine.setPos(ct);
 	glutPostRedisplay();
 }
 
 //	Handle enter, esc e spacebar keys events
 void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
-	const double cos_rot = cos(rotation), sin_rot = sin(rotation);
+	const GLdouble radRotation = submarine.getRot()*(M_PI/180.0);
+	const GLdouble cos_rot = cos(radRotation), sin_rot = sin(radRotation);
 	switch(key) {
 		case 'W':
 		case 'w':
-			viewer[2] = -1.0 * cos_rot + viewer[2];
-			center[2] = -1.0 * cos_rot + center[2];
-			viewer[0] = 1.0 * sin_rot + viewer[0];
-			center[0] = 1.0 * sin_rot + center[0];
+			viewer[2] -= 1.0 * cos_rot;
+			center[2] -= 1.0 * cos_rot;
+			viewer[0] += 1.0 * sin_rot;
+			center[0] += 1.0 * sin_rot;
 			break;
 		case 'S':
 		case 's':
-			viewer[2] = viewer[2] + 1.0 * cos_rot;
-			center[2] = center[2] + 1.0 * cos_rot;
-			viewer[0] = viewer[0] - 1.0 * sin_rot;
-			center[0] = center[0] - 1.0 * sin_rot;
+			viewer[2] += 1.0 * cos_rot;
+			center[2] += 1.0 * cos_rot;
+			viewer[0] -= 1.0 * sin_rot;
+			center[0] -= 1.0 * sin_rot;
 			break;
 		case 'H':
 		case 'h':
-			if(help)
-				help = false;
-			else
-				help = true;
+			help = (help) ? false : true;
 			break;
 		case 'F':
 		case 'f':
@@ -285,19 +274,16 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 			break;
 		case 'I':
 		case 'i':
-			if(fp)
-				fp = false;
-			else
-				fp = true;
+			fp = true;
 			break;
 		case 'L':
 		case 'l':
 			if(light) {
-				glDisable(GL_LIGHTING);
 				light = false;
+				l1 = l2 = true;
+				glDisable(GL_LIGHTING);
 				glEnable(GL_LIGHT0);
 				glEnable(GL_LIGHT1);
-				l1 = l2 = true;
 				glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 			} else {
 				glEnable(GL_LIGHTING);
@@ -306,13 +292,8 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 			break;
 		case 'G':
 		case 'g':
-			if(lightMode) {
-				glShadeModel(GL_SMOOTH);
-				lightMode = false;
-			} else {
-				glShadeModel(GL_FLAT);
-				lightMode = true;
-			}
+			glShadeModel((lightMode) ? GL_SMOOTH : GL_FLAT);
+			lightMode = (lightMode) ? false : true;
 			break;
 		case '1':
 			if(l1 && light) {
@@ -393,7 +374,11 @@ void Game::drawSun() {
 		glTranslatef(viewer[0] + cXSun*view_h*3, cYSun*view_h*2, viewer[2] - cZSun*view_h*3);
 		glutSolidSphere(cRadiusSun*view_h, 100, 8);
 	glPopMatrix();
-	const vector<GLfloat> light_position{(GLfloat)viewer[0] + cXSun*view_h*3, cYSun*view_h*2, (GLfloat)viewer[2] - cZSun*view_h*3, 0.0};
+	const vector<GLfloat> light_position{
+		(GLfloat)viewer[0] + cXSun*view_h*3, cYSun*view_h*2,
+		(GLfloat)viewer[2] - cZSun*view_h*3,
+		0.0
+	};
     glLightfv(GL_LIGHT0, GL_POSITION, &light_position[0]);
 }
 
@@ -403,14 +388,14 @@ void Game::subAnimation(const int x) {
 			upSub = true;
 		else {
 			dispSub++;
-			center[1] += 0.1;
+			center[1] += 0.05;
 		}
 	} else if(upSub) {
 			if(dispSub <= 0)
 				upSub = false;
 			else {
 				dispSub--;
-				center[1] -= 0.1;
+				center[1] -= 0.05;
 			}
 	}
 	GLdb3 ct;
@@ -423,7 +408,7 @@ void Game::subAnimation(const int x) {
 }
 
 void Game::subAnimalsAnimation(const int x) {
-	for(int i = 0; i < fishes.size() && i < sharks.size(); i++) {
+	for(long unsigned int i = 0; i < fishes.size() && i < sharks.size(); i++) {
 		GLdb3 ct;
 
 		if(!upA) {
@@ -472,7 +457,7 @@ void Game::subAnimalsAnimation(const int x) {
 }
 
 void Game::shipAnimation(const int x) {
-	for(int i = 0; i < ships.size(); i++) {
+	for(long unsigned int i = 0; i < ships.size(); i++) {
 		GLdb3 ct;
 		if(!upShip) {
 			if(dispShip >= 5)
@@ -498,38 +483,35 @@ void Game::shipAnimation(const int x) {
 	glutPostRedisplay();
 }
 
-void Game::drawText(const GLdb3 pos,const string text) {
-	glPointSize(1);
+void Game::drawText(const GLdb3 pos, const string text) {
+	const GLdouble scale = 0.005;
+	const GLdouble radRotation = submarine.getRot()*(M_PI/180.0);
+	const unsigned char* t = (unsigned char*)text.c_str();
+
+	glPushMatrix();
 	glLineWidth(2);
 	glColor3f(1.0, 0.0, 0.0);
-	glPushMatrix();
-		glTranslated(pos.x, pos.y+16, pos.z);
-		glScaled(0.005, 0.005, 0.005);
-		glRotated(-(rotation*180)/PI, 0.0, 1.0, 0.0);
-		for(int i = 0; i < text.length(); ++i) {
-			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[i]);
-		}
-    glPopMatrix();
+	glTranslated(pos.x, pos.y+16, pos.z);
+	glScaled(scale, scale, scale);
+	glRotated(-(radRotation*180)/M_PI, 0.0, 1.0, 0.0);
+	glutStrokeString(GLUT_STROKE_MONO_ROMAN, t);
+	glPopMatrix();
 }
 
 void Game::drawHelpMenu() {
+	//	Submarine position
 	GLdb3 pos;
-
-	//	Menu acelerar e frear
 	pos.x = center[0];
 	pos.y = center[1];
 	pos.z = center[2];
+
 	drawText(pos," W para acelerar");
 	pos.y -= 1;
 	drawText(pos," S para re");
-
-	//	Menu emergir e imergir
 	pos.y -= 1;
 	drawText(pos, " Cima para emergir");
 	pos.y -= 1;
 	drawText(pos, " Baixo para imergir");
-
-	//	Menu virar submarino
 	pos.y -= 1;
 	drawText(pos, " Esquerda para virar");
 	pos.y -= 1;

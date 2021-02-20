@@ -14,7 +14,7 @@
 #include "Object3D.h"
 #include "Parser.h"
 
-#define PI 3.1415	//	Approximation to PI
+#define ROTATION 2.0	//	Submarine and world rotation in degree
 
 // -------- Initial window size --------
 
@@ -34,9 +34,8 @@ class Game {
 		static bool fp;	//	Camera state variable
 		static bool upSub, upA, upShip;	//	Aux variables
 		static int dispSub, dispA, dispShip;	//	Aux variables
-		static const GLint nSeaAnimals = 20, nShips = 5, nHelis = 7;	//  Objects quantities
+		static const GLint nSeaAnimals = 10, nShips = 5, nHelis = 5;	//  Objects quantities
 		static Object3D submarine;	//	Vector containing game submarine
-		static GLdouble rotation;	//	Submarine rotation
 		static vector<Object3D> ships;	//	Vector containing all game ships
 		static vector<Object3D> fishes;	//	Vector containing all game fishes
 		static vector<Object3D> sharks;	//	Vector containing all game sharks

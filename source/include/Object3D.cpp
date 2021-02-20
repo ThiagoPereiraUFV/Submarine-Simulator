@@ -35,6 +35,8 @@ Object3D& Object3D::operator=(const Object3D& obj) {
     color.x = obj.color.x;
     color.y = obj.color.y;
     color.z = obj.color.z;
+
+    return *this;
 };
 
 void Object3D::draw() const {
