@@ -34,7 +34,7 @@ void Game::init() {
 	);
 	glutCreateWindow("Submarine simulator by Wallace & Thiago");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
-	//glutFullScreen();
+	glutFullScreen();
 
 	//	Enabling features
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
