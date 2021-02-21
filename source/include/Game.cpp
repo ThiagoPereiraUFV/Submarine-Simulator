@@ -118,35 +118,27 @@ void Game::display() {
 	    0.0, 1.0, 0.0	//	View up vector
 	);
 
-	const GLdb3 disp = submarine.getPos();
-	const GLdouble degRotation = submarine.getRot();
-
 	//	Setting spotlight
 	const vector<GLfloat> lPos = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
 	const vector<GLfloat> lDir = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
 	glLightfv(GL_LIGHT1, GL_POSITION, &lPos[0]);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDir[0]);
 
+	const GLdb3 disp = submarine.getPos();
+	const GLdouble degRotation = submarine.getRot();
+
 	glTranslated(disp.x, disp.y, disp.z);
 	glRotated(degRotation, 0.0, 1.0, 0.0);
 	glTranslated(-disp.x, -disp.y, -disp.z);
 
+	//	Draw game objects
 	//drawAxes();
 	drawSun();
 	drawSea();
-
-	for(const auto ship : ships) {
-		ship.draw();
-	}
-
-	for(const auto heli : helis) {
-		heli.draw();
-	}
-
-	for(long unsigned int i = 0; i < fishes.size() && i < sharks.size(); i++) {
-		fishes[i].draw();
-		sharks[i].draw();
-	}
+	for_each(ships.begin(), ships.end(), drawObject);
+	for_each(helis.begin(), helis.end(), drawObject);
+	for_each(fishes.begin(), fishes.end(), drawObject);
+	for_each(sharks.begin(), sharks.end(), drawObject);
 
 	submarine.draw();
 
@@ -240,8 +232,8 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 			break;
 		case 'G':
 		case 'g':
-			glShadeModel((lightMode) ? GL_SMOOTH : GL_FLAT);
 			lightMode = (lightMode) ? false : true;
+			glShadeModel((lightMode) ? GL_SMOOTH : GL_FLAT);
 			break;
 		case '1':
 			if(l1 && light) {
@@ -495,6 +487,10 @@ void Game::loadHelis() {
 		pos.y = (rand() % (dist/5)) + 50;
 		helis[i].setPos(pos);
 	}
+}
+
+void Game::drawObject(const Object3D& obj) {
+	obj.draw();
 }
 
 void Game::drawText(const GLdb3 pos, const string text) {

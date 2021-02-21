@@ -49,6 +49,7 @@
 		"streambuf": "cpp",
 		"cinttypes": "cpp",
 		"typeinfo": "cpp",
-		"future": "cpp"
+		"future": "cpp",
+		"execution": "cpp"
 	}
 }

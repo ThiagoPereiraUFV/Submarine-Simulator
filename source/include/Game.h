@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 #include <cmath>
-#include <functional>
 #include <string>
 #include <thread>
 #include <algorithm>
@@ -16,6 +15,7 @@
 #include "Parser.h"
 
 using std::thread;
+using std::for_each;
 
 #define ROTATION 2.0	//	Submarine and world rotation in degrees
 
@@ -59,6 +59,7 @@ class Game {
 		static void subAnimation(const int);
 		static void subAnimalsAnimation(const int);
 		static void shipAnimation(const int);
+		static void drawObject(const Object3D&);
 		static void drawText(const GLdb3,const string);
 		static void drawHelpMenu();
 		static void loadSeaAnimals();
