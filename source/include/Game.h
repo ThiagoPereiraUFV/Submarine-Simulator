@@ -4,17 +4,20 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
-#include <unistd.h>
 #include <cstdlib>
 #include <unordered_map>
 #include <vector>
 #include <cmath>
 #include <functional>
 #include <string>
+#include <thread>
+#include <algorithm>
 #include "Object3D.h"
 #include "Parser.h"
 
-#define ROTATION 2.0	//	Submarine and world rotation in degree
+using std::thread;
+
+#define ROTATION 2.0	//	Submarine and world rotation in degrees
 
 // -------- Initial window size --------
 
@@ -24,7 +27,7 @@
 class Game {
 	private:
 		static GLsizei view_w, view_h;	//  Half of game window width and height size
-		static bool started, started1;	//  State variables
+		static bool started;	//  State variable
 		static bool help;	//  Help box state variable
 		static bool light, lightMode, l1, l2;	//  Lights state variables
 		static const vector<GLfloat> spotlight;	//	Spotlight position
@@ -58,6 +61,9 @@ class Game {
 		static void shipAnimation(const int);
 		static void drawText(const GLdb3,const string);
 		static void drawHelpMenu();
+		static void loadSeaAnimals();
+		static void loadShips();
+		static void loadHelis();
 };
 
 #endif

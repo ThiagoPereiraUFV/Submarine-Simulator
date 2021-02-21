@@ -1,9 +1,6 @@
 #ifndef OBJ_H
 #define OBJ_H
 
-#include <GL/gl.h>
-#include <GL/glut.h>
-#include <GL/freeglut.h>
 #include <vector>
 #include "util.cpp"
 
@@ -13,9 +10,8 @@ class Object3D {
     private:
         vector<GLdb3> V, VN, VT;    //  Vetices, normal vertices and texture vertices
         vector<GLint3> F, N, T; //  Faces, nomals and texture
-        GLdb3 pos; //posição central do objeto no espaço
-        GLdouble rot; //rotação atual do objeto
-        GLdb3 color; //cor do objeto
+        GLdb3 pos, color;  //  Object position and color
+        GLdouble rot;   //  Object rotation
     public:
         void draw() const;
         void setRot(const GLdouble&);

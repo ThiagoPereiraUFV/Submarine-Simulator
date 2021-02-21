@@ -1,7 +1,7 @@
 #include "Game.h"
 
 GLsizei Game::view_w = WINDOW_WIDTH, Game::view_h = WINDOW_HEIGHT;
-bool Game::started = false, Game::started1 = false, Game::help = false, Game::fp = false;
+bool Game::started = false, Game::help = false, Game::fp = false;
 bool Game::light = true, Game::lightMode = false, Game::l1 = true, Game::l2 = true;
 const vector<GLfloat> Game::spotlight{0.8, 0.8, 0.8, 1.0};
 const vector<GLfloat> Game::sunlight{0.8, 0.8, 0.8, 1.0};
@@ -52,67 +52,18 @@ void Game::init() {
 
 	//	Loading submarine
 	submarine = parserOBJ::parse("models/submarine.obj");
-	GLdb3 color, pos;
+	GLdb3 color;
 	color.x = (GLdouble)(30) / (GLdouble)255;
 	color.y = (GLdouble)(50) / (GLdouble)255;
 	color.z = (GLdouble)(20) / (GLdouble)255;
 	submarine.setColor(color);
 
-	//	Loading sea animals
-	for(int i = 0; i < nSeaAnimals; i++) {
-		//	Fishes
-		const int dist = view_h;
-		fishes.push_back(parserOBJ::parse("models/fish1.obj"));
-
-		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = -(rand() % dist);
-		fishes[i].setPos(pos);
-
-		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
-		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
-		color.z = (GLdouble)(rand() % 255) / (GLdouble)255;
-		fishes[i].setColor(color);
-
-		//	Shark
-		sharks.push_back(parserOBJ::parse("models/shark1.obj"));
-
-		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = -(rand() % dist) - 5;
-		sharks[i].setPos(pos);
-
-		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
-		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
-		color.z = (GLdouble)(rand() % 255) / (GLdouble)255;
-		sharks[i].setColor(color);
-	}
-
-	//	Loading ships
-	for(int i = 0; i < nShips; i++) {
-		const int dist = 1000;
-		ships.push_back(parserOBJ::parse("models/ship1.obj"));
-
-		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = (GLdouble)0.0;
-		ships[i].setPos(pos);
-
-		const double c = rand() % 255;
-		color.x = color.y = color.z = (GLdouble)c / (GLdouble)255;
-		ships[i].setColor(color);
-	}
-
-	//	Loading helicopters
-	for(int i = 0; i < nHelis; i++) {
-		const int dist = 1000;
-		helis.push_back(parserOBJ::parse("models/helicopter.obj"));
-
-		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
-		pos.y = (rand() % (dist/5)) + 50;
-		helis[i].setPos(pos);
-	}
+	thread t1(loadSeaAnimals);
+	thread t2(loadShips);
+	thread t3(loadHelis);
+	t1.join();
+	t2.join();
+	t3.join();
 }
 
 void Game::updateVariables(const GLsizei w, const GLsizei h) {
@@ -201,9 +152,6 @@ void Game::display() {
 
 	if(help)
 		drawHelpMenu();
-
-	if(!started1)
-		started1 = true;
 
 	glFlush();
 	glutSwapBuffers();
@@ -481,6 +429,72 @@ void Game::shipAnimation(const int x) {
 	}
 	glutTimerFunc(100, shipAnimation, x);
 	glutPostRedisplay();
+}
+//	Loading sea animals and set them up
+void Game::loadSeaAnimals() {
+	//	Loading sea animals
+	for(int i = 0; i < nSeaAnimals; i++) {
+		//	Fishes
+		const int dist = view_h;
+		fishes.push_back(parserOBJ::parse("models/fish1.obj"));
+		GLdb3 color, pos;
+
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.y = -(rand() % dist);
+		fishes[i].setPos(pos);
+
+		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
+		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
+		color.z = (GLdouble)(rand() % 255) / (GLdouble)255;
+		fishes[i].setColor(color);
+
+		//	Shark
+		sharks.push_back(parserOBJ::parse("models/shark1.obj"));
+
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.y = -(rand() % dist) - 5;
+		sharks[i].setPos(pos);
+
+		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
+		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
+		color.z = (GLdouble)(rand() % 255) / (GLdouble)255;
+		sharks[i].setColor(color);
+	}
+}
+
+//	Loading ships and set them up
+void Game::loadShips() {
+	for(int i = 0; i < nShips; i++) {
+		const int dist = 1000;
+		ships.push_back(parserOBJ::parse("models/ship1.obj"));
+		GLdb3 color, pos;
+
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.y = (GLdouble)0.0;
+		ships[i].setPos(pos);
+
+		const double c = rand() % 255;
+		color.x = color.y = color.z = (GLdouble)c / (GLdouble)255;
+		ships[i].setColor(color);
+	}
+}
+
+//	Loading helicopters and set them up
+void Game::loadHelis() {
+	//	Loading helicopters
+	for(int i = 0; i < nHelis; i++) {
+		const int dist = 1000;
+		helis.push_back(parserOBJ::parse("models/helicopter.obj"));
+		GLdb3 pos;
+
+		pos.x = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
+		pos.y = (rand() % (dist/5)) + 50;
+		helis[i].setPos(pos);
+	}
 }
 
 void Game::drawText(const GLdb3 pos, const string text) {

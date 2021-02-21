@@ -1,9 +1,6 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <GL/gl.h>
-#include <GL/glut.h>
-#include <GL/freeglut.h>
 #include <fstream>
 #include <sstream>
 #include <string>
