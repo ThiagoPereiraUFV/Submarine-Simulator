@@ -13,7 +13,7 @@ using std::stringstream;
 
 class parserOBJ {
     public:
-        static Object3D parse(string filename);
+        static Object3D parse(const string&);
     private:
         parserOBJ();
 };
