@@ -2,9 +2,9 @@
 
 GLsizei Game::view_w = WINDOW_WIDTH, Game::view_h = WINDOW_HEIGHT;
 bool Game::started = false, Game::help = false, Game::fp = false;
-bool Game::acc = false, Game::deacc = false, Game::turnLeft = false, Game::turnRight = false;
+bool Game::acc = false, Game::turn = false;
 bool Game::immerse = false, Game::emerge = false;
-GLfloat Game::velocity = 0.0;
+GLfloat Game::velocity = 0.0, Game::deltaVel = 0.0, Game::angVelocity = 0.0, Game::deltaAngVel = 0.0;
 bool Game::light = true, Game::lightMode = false, Game::l1 = true, Game::l2 = true;
 const vector<GLfloat> Game::spotlight{0.8, 0.8, 0.8, 1.0};
 const vector<GLfloat> Game::sunlight{0.8, 0.8, 0.8, 1.0};
@@ -14,60 +14,6 @@ int Game::dispSub = 0, Game::dispA = 0, Game::dispShip = 0;
 Object3D Game::submarine;
 vector<Object3D> Game::ships, Game::fishes, Game::sharks, Game::helis;
 vector<vector<GLfloat>> Game::verticesSea;
-
-void Game::subMotion(const int x) {
-	const GLdouble radRotation = submarine.getRot()*(M_PI/180.0);
-	const GLdouble cos_rot = cos(radRotation), sin_rot = sin(radRotation);
-
-	if(acc) {
-		velocity = (velocity == 0.0) ? 1.0 : (velocity >= 0.0) ? velocity*2.0 : velocity/2.0 ;
-		velocity = (velocity > -1.0 && velocity < 0.0) ? 0.0 : velocity;
-		velocity = (velocity >= MAXVELOCITY) ? MAXVELOCITY : velocity;
-	} else if(deacc) {
-		velocity = (velocity == 0.0) ? -1.0 : (velocity >= 0.0) ? velocity/2.0 : velocity*2.0 ;
-		velocity = (velocity > 0.0 && velocity < 1.0) ? 0.0 : velocity;
-		velocity = (velocity <= -MAXVELOCITY) ? -MAXVELOCITY : velocity;
-	} else {
-		velocity = (velocity == 0.0) ? 0.0 : (velocity > 0.0) ? velocity - 1 : velocity + 1;
-	}
-	//std::cout << acc << " " << velocity << std::endl;
-
-	viewer[2] -= velocity * cos_rot;
-	center[2] -= velocity * cos_rot;
-	viewer[0] += velocity * sin_rot;
-	center[0] += velocity * sin_rot;
-
-	GLdouble degRotation = submarine.getRot();
-
-	if(turnRight) {
-		degRotation += ROTATION;
-		degRotation = (degRotation >= 360) ? 0 : degRotation;
-	} else if(turnLeft) {
-		degRotation -= ROTATION;
-		degRotation = (degRotation <= 0) ? 360 : degRotation;
-	}
-
-	if(emerge) {
-		if(center[1] < 0) {
-			viewer[1] += 1.0;
-			center[1] += 1.0;
-		}
-	} else if(immerse) {
-		if(center[1] >= -view_h) {
-			viewer[1] -= 1.0;
-			center[1] -= 1.0;
-		}
-	}
-
-	GLdb3 ct;
-	ct.x = center[0];
-	ct.y = center[1];
-	ct.z = center[2];
-	submarine.setPos(ct);
-	submarine.setRot(degRotation);
-	glutTimerFunc(1, subMotion, x);
-	glutPostRedisplay();
-}
 
 //	Set up OpenGl and start game
 void Game::game(int argc, char** argv) {
@@ -93,7 +39,7 @@ void Game::init() {
 	);
 	glutCreateWindow("Submarine simulator by Wallace & Thiago");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
-	//glutFullScreen();
+	glutFullScreen();
 
 	//	Enabling features
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -145,10 +91,9 @@ void Game::updateVariables(const GLsizei w, const GLsizei h) {
 		const GLdb3 pos = submarine.getPos();
 		center = {pos.x, pos.y, pos.z};
 		started = true;
-		subAnimation(0);
+		subMotion(0);
 		subAnimalsAnimation(0);
 		shipAnimation(0);
-		subMotion(0);
 	}
 }
 
@@ -220,18 +165,14 @@ void Game::SpecialKeys(const int key, const int x, const int y) {
 			immerse = true;
 			break;
 		case GLUT_KEY_RIGHT:
-			turnRight = true;
+			deltaAngVel = 0.1;
+			turn = true;
 			break;
 		case GLUT_KEY_LEFT:
-			turnLeft = true;
+			deltaAngVel = -0.1;
+			turn = true;
 			break;
 	}
-	GLdb3 ct;
-	ct.x = center[0];
-	ct.y = center[1];
-	ct.z = center[2];
-	submarine.setPos(ct);
-	glutPostRedisplay();
 }
 
 //	Handle arrow keys events
@@ -244,12 +185,13 @@ void Game::SpecialKeysUp(const int key, const int x, const int y) {
 			immerse = false;
 			break;
 		case GLUT_KEY_RIGHT:
-			turnRight = false;
+			turn = false;
 			break;
 		case GLUT_KEY_LEFT:
-			turnLeft = false;
+			turn = false;
 			break;
 	}
+	deltaAngVel = 0.0;
 }
 
 //	Handle enter, esc e spacebar keys events
@@ -257,11 +199,13 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 	switch(key) {
 		case 'W':
 		case 'w':
+			deltaVel = 0.01;
 			acc = true;
 			break;
 		case 'S':
 		case 's':
-			deacc = true;
+			deltaVel = -0.01;
+			acc = true;
 			break;
 		case 'H':
 		case 'h':
@@ -332,9 +276,10 @@ void Game::HandleKeyboardUp(const unsigned char key, const int x, const int y) {
 			break;
 		case 'S':
 		case 's':
-			deacc = false;
+			acc = false;
+			break;
 	}
-
+	deltaVel = 0.0;
 }
 
 void Game::drawAxes() {
@@ -390,28 +335,85 @@ void Game::drawSun() {
     glLightfv(GL_LIGHT0, GL_POSITION, &light_position[0]);
 }
 
-void Game::subAnimation(const int x) {
+//	Function to define submarine position and rotation
+void Game::subMotion(const int x) {
+	const GLfloat radRotation = submarine.getRot()*(M_PI/180.0);
+	const GLfloat cos_rot = cos(radRotation), sin_rot = sin(radRotation);
+	const GLfloat maxVelocity = 10.0, maxAcceleration = 0.5, deltaAcc = 0.1, thrustAcc = 0.2;
+
+	if(acc) {
+		velocity += deltaVel;
+		deltaVel += (deltaVel > 0.0) ? deltaAcc : -deltaAcc;
+		velocity = (abs(velocity) >= maxVelocity) ? (velocity/abs(velocity))*maxVelocity : velocity;
+		deltaVel = (abs(deltaVel) >= maxAcceleration) ? (deltaVel/abs(deltaVel))*maxAcceleration : deltaVel;
+	} else {
+		velocity = (abs(velocity) <= thrustAcc) ?
+			0.0
+			:
+			(velocity > 0.0) ?
+				velocity - thrustAcc
+				:
+				velocity + thrustAcc;
+	}
+
+	viewer[2] -= velocity * cos_rot;
+	center[2] -= velocity * cos_rot;
+	viewer[0] += velocity * sin_rot;
+	center[0] += velocity * sin_rot;
+
+	GLdouble degRotation = submarine.getRot();
+	const GLdouble maxAngVel = 3.0;
+
+	if(turn) {
+		angVelocity += deltaAngVel;
+		angVelocity = (abs(angVelocity) >= maxAngVel) ? (angVelocity/abs(angVelocity))*maxAngVel : angVelocity;
+		deltaAngVel = (abs(deltaAngVel) >= maxAngVel) ? (deltaAngVel/abs(deltaAngVel))*maxAngVel : deltaAngVel;
+	} else {
+		angVelocity = (abs(angVelocity) <= thrustAcc) ?
+			0.0
+			:
+			(angVelocity > 0.0) ?
+				angVelocity - thrustAcc
+				:
+				angVelocity + thrustAcc;
+	}
+
+	if(emerge) {
+		if(center[1] < 0) {
+			viewer[1] += 1.0;
+			center[1] += 1.0;
+		}
+	} else if(immerse) {
+		if(center[1] >= -view_h) {
+			viewer[1] -= 1.0;
+			center[1] -= 1.0;
+		}
+	}
+
+	const GLfloat deltaY = 0.01;
 	if(!upSub) {
-		if(dispSub >= 5)
+		if(dispSub >= 30)
 			upSub = true;
 		else {
 			dispSub++;
-			center[1] += 0.05;
+			center[1] += deltaY;
 		}
 	} else if(upSub) {
 			if(dispSub <= 0)
 				upSub = false;
 			else {
 				dispSub--;
-				center[1] -= 0.05;
+				center[1] -= deltaY;
 			}
 	}
+
 	GLdb3 ct;
 	ct.x = center[0];
 	ct.y = center[1];
 	ct.z = center[2];
 	submarine.setPos(ct);
-	glutTimerFunc(250, subAnimation, x);
+	submarine.setRot(degRotation + angVelocity);
+	glutTimerFunc(1, subMotion, x);
 	glutPostRedisplay();
 }
 

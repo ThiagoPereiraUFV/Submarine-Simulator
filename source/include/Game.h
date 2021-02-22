@@ -11,15 +11,11 @@
 #include <string>
 #include <thread>
 #include <algorithm>
-#include <iostream>
 #include "Object3D.h"
 #include "Parser.h"
 
 using std::thread;
 using std::for_each;
-
-#define ROTATION 2.0	//	Submarine and world rotation in degrees
-#define MAXVELOCITY 10.0	//	Submarine max velocity
 
 // -------- Initial window size --------
 
@@ -28,9 +24,9 @@ using std::for_each;
 
 class Game {
 	private:
-		static GLsizei view_w, view_h;	//  Half of game window width and height size
-		static bool acc, deacc, turnLeft, turnRight, immerse, emerge;
-		static GLfloat velocity;
+		static GLsizei view_w, view_h;	//  Current window width and height size
+		static bool acc, turn, immerse, emerge;	//	Submarine motion state variables
+		static GLfloat velocity, deltaVel, angVelocity, deltaAngVel;	//	Submarine motion variables
 		static bool started;	//  State variable
 		static bool help;	//  Help box state variable
 		static bool light, lightMode, l1, l2;	//  Lights state variables
@@ -63,7 +59,6 @@ class Game {
 		static void drawSea();
 		static void drawSun();
 		static void subMotion(const int);
-		static void subAnimation(const int);
 		static void subAnimalsAnimation(const int);
 		static void shipAnimation(const int);
 		static void drawObject(const Object3D&);

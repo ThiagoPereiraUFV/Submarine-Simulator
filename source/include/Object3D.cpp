@@ -76,7 +76,7 @@ void Object3D::setPos(const GLdb3& pos) {
 };
 
 void Object3D::setRot(const GLdouble& rot) {
-    this->rot = rot;
+    this->rot = (rot > 360.0) ? 0 : (rot < 0.0) ? 360.0 : rot;
 };
 
 void Object3D::setColor(const GLdb3& color) {
