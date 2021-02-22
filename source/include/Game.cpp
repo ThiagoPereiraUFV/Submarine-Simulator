@@ -37,7 +37,7 @@ void Game::init() {
 		(glutGet(GLUT_SCREEN_WIDTH) - WINDOW_WIDTH) / 2,
 		(glutGet(GLUT_SCREEN_HEIGHT) - WINDOW_HEIGHT) / 2
 	);
-	glutCreateWindow("Submarine simulator by Wallace & Thiago");
+	glutCreateWindow("Submarine simulator by Thiago Pereira");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 	glutFullScreen();
 
