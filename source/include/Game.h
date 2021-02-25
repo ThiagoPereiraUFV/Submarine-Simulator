@@ -14,13 +14,9 @@
 #include "Object3D.h"
 #include "Parser.h"
 
+//	Using resources
 using std::thread;
 using std::for_each;
-
-// -------- Initial window size --------
-
-#define WINDOW_WIDTH 600	//	Width
-#define WINDOW_HEIGHT 500	//	Height
 
 class Game {
 	private:
@@ -37,7 +33,7 @@ class Game {
 		static bool fp;	//	Camera state variable
 		static bool upSub, upA, upShip;	//	Aux variables
 		static int dispSub, dispA, dispShip;	//	Aux variables
-		static const GLint nSeaAnimals = 10, nShips = 5, nHelis = 5;	//  Objects quantities
+		static const GLint nSeaAnimals = 20, nShips = 5, nHelis = 5;	//  Objects quantities
 		static Object3D submarine;	//	Vector containing game submarine
 		static vector<Object3D> ships;	//	Vector containing all game ships
 		static vector<Object3D> fishes;	//	Vector containing all game fishes

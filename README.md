@@ -47,6 +47,7 @@ This project was built using following technologies:
 * 1 enable or disable ambient light and key 2 enable or disable spotlight
 * L or l enable or disable the light effects
 * G or g toggle between Gouroud or Flat-Shading global shading models
+* F11 toggle between windowed or fullscreen modes
 * Esc to exit game
 
 ## :wrench: Installation

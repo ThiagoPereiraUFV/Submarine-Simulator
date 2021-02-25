@@ -1,6 +1,6 @@
 #include "Game.h"
 
-GLsizei Game::view_w = WINDOW_WIDTH, Game::view_h = WINDOW_HEIGHT;
+GLsizei Game::view_w, Game::view_h;
 bool Game::started = false, Game::help = false, Game::fp = false;
 bool Game::acc = false, Game::turn = false;
 bool Game::immerse = false, Game::emerge = false;
@@ -31,24 +31,33 @@ void Game::game(int argc, char** argv) {
 
 //	Set up OpenGl window
 void Game::init() {
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	view_h = glutGet(GLUT_SCREEN_HEIGHT)*0.6;
+	view_w = glutGet(GLUT_SCREEN_WIDTH)*0.6;
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitWindowSize(view_w, view_h);
 	glutInitWindowPosition(
-		(glutGet(GLUT_SCREEN_WIDTH) - WINDOW_WIDTH) / 2,
-		(glutGet(GLUT_SCREEN_HEIGHT) - WINDOW_HEIGHT) / 2
+		(glutGet(GLUT_SCREEN_WIDTH) - view_w)*0.5,
+		(glutGet(GLUT_SCREEN_HEIGHT) - view_h)*0.5
 	);
 	glutCreateWindow("Submarine simulator by Thiago Pereira");
 	glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
-	glutFullScreen();
 
 	//	Enabling features
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHT1);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH, GL_NICEST);
+	glEnable(GL_POINT_SMOOTH);
+	glHint(GL_POINT_SMOOTH, GL_NICEST);
+	glEnable(GL_POLYGON_SMOOTH);
+	glShadeModel(GL_SMOOTH);
+	glutSetOption(GLUT_MULTISAMPLE, 4);
+	glEnable(GL_MULTISAMPLE);
 	glutIgnoreKeyRepeat(true);
 	srand(time(NULL));
 
@@ -63,6 +72,7 @@ void Game::init() {
 	color.y = (GLdouble)(50) / (GLdouble)255;
 	color.z = (GLdouble)(20) / (GLdouble)255;
 	submarine.setColor(color);
+	//submarine.setRotY(rand() % 360);
 
 	thread t1(loadSeaAnimals);
 	thread t2(loadShips);
@@ -99,15 +109,11 @@ void Game::updateVariables(const GLsizei w, const GLsizei h) {
 
 //	Resize game elements to keep ratio
 void Game::reshape(const GLsizei w, const GLsizei h) {
-	if(w < WINDOW_WIDTH) {
-		glutReshapeWindow(WINDOW_WIDTH, h);
-	}
-
 	updateVariables(w, h);
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(70.0, (GLfloat)view_w / (GLfloat)view_h, 2.0, view_h * 6);
+	gluPerspective(80.0, (GLfloat)w / (GLfloat)h, 0.5, view_h*6);
 	glMatrixMode(GL_MODELVIEW);
 	glutPostRedisplay();
 }
@@ -119,19 +125,19 @@ void Game::display() {
 	//	Setting up observer camera
 	glLoadIdentity();
 	gluLookAt(
-	    viewer[0], (fp) ? viewer[1] - 5 : viewer[1], (fp) ? viewer[2] - 22 : viewer[2],
-	    center[0], (fp) ? center[1] + 5 : center[1] + 10, (fp) ? center[2] - 22 : center[2] + 2,
+	    viewer[0], viewer[1] + ((fp) ? -5 : 0), viewer[2] + ((fp) ? -22 : 0),
+	    center[0], center[1] + ((fp) ? 5 : 10), center[2] + ((fp) ? -22 : 0),
 	    0.0, 1.0, 0.0	//	View up vector
 	);
 
 	//	Setting spotlight
-	const vector<GLfloat> lPos = {(GLfloat)viewer[0], (GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
-	const vector<GLfloat> lDir = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
+	const vector<GLfloat> lPos = {(GLfloat)viewer[0], -(GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
+	const vector<GLfloat> lDir = {(GLfloat)center[0], -(GLfloat)center[1], (GLfloat)center[2]};
 	glLightfv(GL_LIGHT1, GL_POSITION, &lPos[0]);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDir[0]);
 
 	const GLdb3 disp = submarine.getPos();
-	const GLdouble degRotation = submarine.getRot();
+	const GLdouble degRotation = submarine.getRotY();
 
 	glTranslated(disp.x, disp.y, disp.z);
 	glRotated(degRotation, 0.0, 1.0, 0.0);
@@ -172,6 +178,8 @@ void Game::SpecialKeys(const int key, const int x, const int y) {
 			deltaAngVel = -0.1;
 			turn = true;
 			break;
+		case GLUT_KEY_F11:
+			glutFullScreenToggle();
 	}
 }
 
@@ -185,13 +193,14 @@ void Game::SpecialKeysUp(const int key, const int x, const int y) {
 			immerse = false;
 			break;
 		case GLUT_KEY_RIGHT:
+			deltaAngVel = 0.0;
 			turn = false;
 			break;
 		case GLUT_KEY_LEFT:
+			deltaAngVel = 0.0;
 			turn = false;
 			break;
 	}
-	deltaAngVel = 0.0;
 }
 
 //	Handle enter, esc e spacebar keys events
@@ -225,8 +234,6 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 				light = false;
 				l1 = l2 = true;
 				glDisable(GL_LIGHTING);
-				glEnable(GL_LIGHT0);
-				glEnable(GL_LIGHT1);
 				glClearColor(0.0, (GLfloat)227 / (GLfloat)255, 1.0, 1.0);
 			} else {
 				glEnable(GL_LIGHTING);
@@ -271,13 +278,14 @@ void Game::HandleKeyboardUp(const unsigned char key, const int x, const int y) {
 		case 'W':
 		case 'w':
 			acc = false;
+			deltaVel = 0.0;
 			break;
 		case 'S':
 		case 's':
 			acc = false;
+			deltaVel = 0.0;
 			break;
 	}
-	deltaVel = 0.0;
 }
 
 void Game::drawAxes() {
@@ -319,15 +327,16 @@ void Game::drawSea() {
 }
 
 void Game::drawSun() {
-	const GLfloat cRadiusSun = (!l1 && light) ? 0.01 : 0.02, cXSun = 0.09, cYSun = 0.08, cZSun = 0.18;
+	const GLfloat cRadiusSun = (!l1 && light) ? 0.1 : 0.2;
 	glColor3f(1.0, 0.9, 0.0);
 	glPushMatrix();
-		glTranslatef(viewer[0] + cXSun*view_h*3, cYSun*view_h*2, viewer[2] - cZSun*view_h*3);
+		glTranslatef(viewer[0] + view_h*4, view_h*2, viewer[2] - view_h*4);
 		glutSolidSphere(cRadiusSun*view_h, 100, 8);
 	glPopMatrix();
 	const vector<GLfloat> light_position{
-		(GLfloat)viewer[0] + cXSun*view_h*3, cYSun*view_h*2,
-		(GLfloat)viewer[2] - cZSun*view_h*3,
+		-((GLfloat)viewer[0] + view_h*4),
+		-(GLfloat)view_h*2,
+		-((GLfloat)viewer[2] - view_h*4),
 		0.0
 	};
     glLightfv(GL_LIGHT0, GL_POSITION, &light_position[0]);
@@ -335,9 +344,9 @@ void Game::drawSun() {
 
 //	Function to define submarine position and rotation
 void Game::subMotion(const int x) {
-	const GLfloat radRotation = submarine.getRot()*(M_PI/180.0);
+	const GLfloat radRotation = submarine.getRotY()*(M_PI/180.0);
 	const GLfloat cos_rot = cos(radRotation), sin_rot = sin(radRotation);
-	const GLfloat maxVelocity = 10.0, maxAcceleration = 0.5, deltaAcc = 0.1, thrustAcc = 0.2;
+	const GLfloat maxVelocity = 5.0, maxAcceleration = 0.2, deltaAcc = 0.05, thrustAcc = 0.1;
 
 	if(acc) {
 		velocity += deltaVel;
@@ -359,8 +368,8 @@ void Game::subMotion(const int x) {
 	viewer[0] += velocity * sin_rot;
 	center[0] += velocity * sin_rot;
 
-	GLdouble degRotation = submarine.getRot();
-	const GLdouble maxAngVel = 3.0;
+	GLdouble degRotation = submarine.getRotY();
+	const GLdouble maxAngVel = 1.0;
 
 	if(turn) {
 		angVelocity += deltaAngVel;
@@ -410,53 +419,25 @@ void Game::subMotion(const int x) {
 	ct.y = center[1];
 	ct.z = center[2];
 	submarine.setPos(ct);
-	submarine.setRot(degRotation + angVelocity);
+	submarine.setRotY(degRotation + angVelocity);
+	submarine.setRotZ(angVelocity);
 	glutTimerFunc(1, subMotion, x);
 }
 
 void Game::subAnimalsAnimation(const int x) {
 	for(long unsigned int i = 0; i < fishes.size() && i < sharks.size(); i++) {
+		const GLfloat radRotationF = fishes[i].getRotY()*(M_PI/180.0);
+		const GLfloat radRotationS = sharks[i].getRotY()*(M_PI/180.0);
 		GLdb3 ct;
 
-		if(!upA) {
-			if(dispA >= 5)
-				upA = true;
-			else {
-				dispA++;
-				ct.y = fishes[i].getPos().y + 0.02;
-			}
-		} else if(upA) {
-				if(dispA <= 0)
-					upA = false;
-				else {
-					dispA--;
-					ct.y = fishes[i].getPos().y - 0.02;
-				}
-		}
-
-		ct.x = fishes[i].getPos().x + 0.1*sin(0);
-		ct.z = fishes[i].getPos().z + 0.1*cos(0);
+		ct.x = fishes[i].getPos().x + 0.1*sin(-radRotationF);
+		ct.z = fishes[i].getPos().z + 0.1*cos(-radRotationF);
+		ct.y = fishes[i].getPos().y;
 		fishes[i].setPos(ct);
 
-
-		if(!upA) {
-			if(dispA >= 5)
-				upA = true;
-			else {
-				dispA++;
-				ct.y = sharks[i].getPos().y + 0.02;
-			}
-		} else if(upA) {
-				if(dispA <= 0)
-					upA = false;
-				else {
-					dispA--;
-					ct.y = sharks[i].getPos().y - 0.02;
-				}
-		}
-
-		ct.x = sharks[i].getPos().x + 0.1*sin(4.71239);
-		ct.z = sharks[i].getPos().z + 0.1*cos(4.71239);
+		ct.x = sharks[i].getPos().x + 0.1*sin(4.71239-radRotationS);
+		ct.z = sharks[i].getPos().z + 0.1*cos(4.71239-radRotationS);
+		ct.y = sharks[i].getPos().y;
 		sharks[i].setPos(ct);
 	}
 	glutTimerFunc(50, subAnimalsAnimation, x);
@@ -464,29 +445,17 @@ void Game::subAnimalsAnimation(const int x) {
 
 void Game::shipAnimation(const int x) {
 	for(long unsigned int i = 0; i < ships.size(); i++) {
+		const GLfloat radRotation = ships[i].getRotY()*(M_PI/180.0);
 		GLdb3 ct;
-		if(!upShip) {
-			if(dispShip >= 5)
-				upShip = true;
-			else {
-				dispShip++;
-				ct.y = ships[i].getPos().y + 0.01;
-			}
-		} else if(upShip) {
-				if(dispShip <= 0)
-					upShip = false;
-				else {
-					dispShip--;
-					ct.y = ships[i].getPos().y - 0.01;
-				}
-		}
-		ct.x = ships[i].getPos().x + 0.5*sin(4.71239);
-		ct.z = ships[i].getPos().z + 0.5*cos(4.71239);
+
+		ct.x = ships[i].getPos().x + 0.1*sin(4.71239-radRotation);
+		ct.z = ships[i].getPos().z + 0.1*cos(4.71239-radRotation);
 		ct.y = ships[i].getPos().y;
 		ships[i].setPos(ct);
 	}
-	glutTimerFunc(100, shipAnimation, x);
+	glutTimerFunc(50, shipAnimation, x);
 }
+
 //	Loading sea animals and set them up
 void Game::loadSeaAnimals() {
 	//	Loading sea animals
@@ -500,6 +469,7 @@ void Game::loadSeaAnimals() {
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = -(rand() % dist);
 		fishes[i].setPos(pos);
+		fishes[i].setRotY(rand() % 360);
 
 		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
@@ -513,6 +483,7 @@ void Game::loadSeaAnimals() {
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = -(rand() % dist) - 5;
 		sharks[i].setPos(pos);
+		sharks[i].setRotY(rand() % 360);
 
 		color.x = (GLdouble)(rand() % 255) / (GLdouble)255;
 		color.y = (GLdouble)(rand() % 255) / (GLdouble)255;
@@ -532,6 +503,7 @@ void Game::loadShips() {
 		pos.z = (rand() % 2 == 0) ? -(rand() % dist) : rand() % dist;
 		pos.y = (GLdouble)0.0;
 		ships[i].setPos(pos);
+		ships[i].setRotY(rand() % 360);
 
 		const double c = rand() % 255;
 		color.x = color.y = color.z = (GLdouble)c / (GLdouble)255;
@@ -554,13 +526,14 @@ void Game::loadHelis() {
 	}
 }
 
+//	Draw object on its position
 void Game::drawObject(const Object3D& obj) {
 	obj.draw();
 }
 
 void Game::drawText(const GLdb3 pos, const string text) {
 	const GLdouble scale = 0.005;
-	const GLdouble radRotation = submarine.getRot()*(M_PI/180.0);
+	const GLdouble radRotation = submarine.getRotY()*(M_PI/180.0);
 	const unsigned char* t = (unsigned char*)text.c_str();
 
 	glPushMatrix();

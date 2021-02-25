@@ -12,7 +12,8 @@ Object3D::Object3D(
     this->T = T;
     pos.x = pos.y = pos.z = 0;
     color.x = color.y = color.z = 0;
-    rot = 0.0;
+    rotY = 0.0;
+    rotZ = 0.0;
 };
 
 Object3D::Object3D(const Object3D& obj) {
@@ -31,7 +32,8 @@ Object3D& Object3D::operator=(const Object3D& obj) {
     T = obj.getTexture();
     N = obj.getNormals();
     pos = obj.getPos();
-    rot = obj.getRot();
+    rotY = obj.getRotY();
+    rotZ = obj.getRotZ();
     color.x = obj.color.x;
     color.y = obj.color.y;
     color.z = obj.color.z;
@@ -43,7 +45,8 @@ void Object3D::draw() const {
     glPushMatrix();
     glColor3f(color.x, color.y, color.z);
     glTranslated(pos.x, pos.y, pos.z);
-    glRotated(-rot, 0.0, 1.0, 0.0);
+    glRotated(-rotY, 0.0, 1.0, 0.0);
+    glRotated(-rotZ, 0.0, 0.0, 1.0);
 
     for(unsigned long i = 0; i < F.size(); i++) {
         glBegin(GL_TRIANGLES);
@@ -75,8 +78,11 @@ void Object3D::setPos(const GLdb3& pos) {
     this->pos.z = pos.z;
 };
 
-void Object3D::setRot(const GLdouble& rot) {
-    this->rot = (rot > 360.0) ? 0 : (rot < 0.0) ? 360.0 : rot;
+void Object3D::setRotY(const GLdouble& rotY) {
+    this->rotY = (rotY > 360.0) ? 0 : (rotY < 0.0) ? 360.0 : rotY;
+};
+void Object3D::setRotZ(const GLdouble& rotZ) {
+    this->rotZ = rotZ;
 };
 
 void Object3D::setColor(const GLdb3& color) {
