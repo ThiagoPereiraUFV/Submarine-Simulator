@@ -264,8 +264,6 @@ void Game::HandleKeyboard(const unsigned char key, const int x, const int y) {
 			exit(0);
 			break;
 	}
-
-	glutPostRedisplay();
 }
 
 void Game::HandleKeyboardUp(const unsigned char key, const int x, const int y) {
@@ -414,7 +412,6 @@ void Game::subMotion(const int x) {
 	submarine.setPos(ct);
 	submarine.setRot(degRotation + angVelocity);
 	glutTimerFunc(1, subMotion, x);
-	glutPostRedisplay();
 }
 
 void Game::subAnimalsAnimation(const int x) {
@@ -463,7 +460,6 @@ void Game::subAnimalsAnimation(const int x) {
 		sharks[i].setPos(ct);
 	}
 	glutTimerFunc(50, subAnimalsAnimation, x);
-	glutPostRedisplay();
 }
 
 void Game::shipAnimation(const int x) {
@@ -490,7 +486,6 @@ void Game::shipAnimation(const int x) {
 		ships[i].setPos(ct);
 	}
 	glutTimerFunc(100, shipAnimation, x);
-	glutPostRedisplay();
 }
 //	Loading sea animals and set them up
 void Game::loadSeaAnimals() {
