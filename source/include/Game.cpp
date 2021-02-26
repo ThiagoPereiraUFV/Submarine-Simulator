@@ -131,8 +131,8 @@ void Game::display() {
 	);
 
 	//	Setting spotlight
-	const vector<GLfloat> lPos = {(GLfloat)viewer[0], -(GLfloat)viewer[1], (GLfloat)viewer[2], 1.0};
-	const vector<GLfloat> lDir = {(GLfloat)center[0], -(GLfloat)center[1], (GLfloat)center[2]};
+	const vector<GLfloat> lPos = {-(GLfloat)viewer[0], -(GLfloat)viewer[1], -(GLfloat)viewer[2], 0};
+	const vector<GLfloat> lDir = {(GLfloat)center[0], (GLfloat)center[1], (GLfloat)center[2]};
 	glLightfv(GL_LIGHT1, GL_POSITION, &lPos[0]);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &lDir[0]);
 
@@ -334,10 +334,10 @@ void Game::drawSun() {
 		glutSolidSphere(cRadiusSun*view_h, 100, 8);
 	glPopMatrix();
 	const vector<GLfloat> light_position{
-		-((GLfloat)viewer[0] + view_h*4),
-		-(GLfloat)view_h*2,
-		-((GLfloat)viewer[2] - view_h*4),
-		0.0
+		(GLfloat)viewer[0] + view_h*4,
+		(GLfloat)view_h*2,
+		(GLfloat)viewer[2] - view_h*4,
+		-1.0
 	};
     glLightfv(GL_LIGHT0, GL_POSITION, &light_position[0]);
 }

@@ -11,6 +11,7 @@
 #include <string>
 #include <thread>
 #include <algorithm>
+#include <iostream>
 #include "Object3D.h"
 #include "Parser.h"
 
