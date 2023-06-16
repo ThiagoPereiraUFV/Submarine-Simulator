@@ -50,29 +50,13 @@ This project was built using following technologies:
 * F11 toggle between windowed or fullscreen modes
 * Esc to exit game
 
-## :wrench: Installation
+## :wrench: Installation and run
 
-__You must install OpenGL library using the following commands on your Terminal:__
-
-```bash
-# Update packages (on Linux devices)
-$ sudo apt update
-
-# Install OpenGL library and its dependencies
-$ sudo apt install libglu1-mesa-dev freeglut3-dev mesa-common-dev
-```
-
-__Execute the following commands to compile the code and run the game on your Terminal:__
+__In order to install required libraries start the game, run the following command on your terminal:__
 
 ```bash
-# Compile the source code
-$ make
-
-# Run the game on your terminal
-$ make start
-
-# Run it if you want to clean binary files
-$ make clean
+# Run bash script
+$ bash install.sh
 ```
 
 ## :memo: License
