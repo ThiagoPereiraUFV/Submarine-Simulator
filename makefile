@@ -18,5 +18,8 @@ Object3D.o :
 start :
 	./simulator.out
 
+install :
+	sudo apt update && sudo apt install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+
 clean :
 	clear && rm ./bin/*.o *.out

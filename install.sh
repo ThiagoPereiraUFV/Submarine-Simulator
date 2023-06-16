@@ -1,0 +1,1 @@
+make install && make && make start && make clean
