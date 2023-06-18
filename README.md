@@ -52,7 +52,7 @@ This project was built using following technologies:
 
 ## :wrench: Installation and run
 
-__In order to install required libraries start the game, run the following command on your terminal:__
+__In order to install required libraries and start the game, run the following command on your terminal:__
 
 ```bash
 # Run bash script
