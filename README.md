@@ -7,11 +7,11 @@
 </h4>
 
 <p align="center">
-<img alt="GitHub language count" src="https://img.shields.io/github/languages/count/ThiagoPereiraUFV/Tetris">
+<img alt="GitHub language count" src="https://img.shields.io/github/languages/count/ThiagoPereiraUFV/Submarine-Simulator">
 
-<img alt="Repository size" src="https://img.shields.io/github/repo-size/ThiagoPereiraUFV/Tetris">
+<img alt="Repository size" src="https://img.shields.io/github/repo-size/ThiagoPereiraUFV/Submarine-Simulator">
 
-<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ThiagoPereiraUFV/Tetris">
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ThiagoPereiraUFV/Submarine-Simulator">
 
 <img alt="License" src="https://img.shields.io/badge/license-MIT-brightgreen">
 </p>
@@ -26,7 +26,7 @@
 <br>
 
 <p align="center">
-	<img alt="Tetris" src=".github/simulator.gif" width="100%">
+	<img alt="Submarine-Simulator" src=".github/simulator.gif" width="100%">
 </p>
 
 ## :rocket: Technologies
