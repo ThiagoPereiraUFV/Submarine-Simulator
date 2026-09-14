@@ -1,39 +1,45 @@
-#ifndef OBJ_H
-#define OBJ_H
+#ifndef OBJECT3D_H
+#define OBJECT3D_H
 
 #include <vector>
-#include "util.cpp"
+#include "Vec3.h"
 
-using std::vector;
-
+// A parsed OBJ mesh plus the placement (position/color/rotation) the game
+// gives it. Pure data: drawing lives in the renderer, not here, so this class
+// never depends on GL.
 class Object3D {
-    private:
-        vector<GLdb3> V, VN, VT;    //  Vetices, normal vertices and texture vertices
-        vector<GLint3> F, N, T; //  Faces, nomals and texture
-        GLdb3 pos, color;  //  Object position and color
-        GLdouble rotY, rotZ;   //  Object rotations
-    public:
-        void draw() const;
-        void setRotY(const GLdouble&);
-        void setRotZ(const GLdouble&);
-        void setPos(const GLdb3&);
-        void setColor(const GLdb3&);
-        GLdb3 getPos() const { return pos; }
-        GLdouble getRotY() const { return rotY; }
-        GLdouble getRotZ() const { return rotZ; }
-        vector<GLdb3> getVertices() const { return V; }
-        vector<GLdb3> getVNormals() const { return VN; }
-        vector<GLdb3> getVTexture() const { return VT; }
-        vector<GLint3> getFaces() const { return F; }
-        vector<GLint3> getNormals() const { return N; }
-        vector<GLint3> getTexture() const { return T; }
-        Object3D(){};
-        Object3D(const Object3D&);
-        Object3D(
-            const vector<GLdb3>&, const vector<GLdb3>&, const vector<GLdb3>&,
-            const vector<GLint3>&, const vector<GLint3>&, const vector<GLint3>&
-        );
-        Object3D& operator=(const Object3D&);
+public:
+	Object3D() = default;
+	Object3D(std::vector<Vec3> vertices, std::vector<Vec3> normals, std::vector<Vec3> texcoords,
+			 std::vector<Face> faces, std::vector<Face> faceNormals,
+			 std::vector<Face> faceTexcoords);
+	// Copy and move are left implicit on purpose: declaring the copy operations
+	// (even as `= default`) suppresses the move constructor, which would turn
+	// every `std::move` of a 20k-vertex mesh into a silent deep copy.
+
+	const std::vector<Vec3>& vertices() const { return vertices_; }
+	const std::vector<Vec3>& normals() const { return normals_; }
+	const std::vector<Vec3>& texcoords() const { return texcoords_; }
+	const std::vector<Face>& faces() const { return faces_; }
+	const std::vector<Face>& faceNormals() const { return faceNormals_; }
+	const std::vector<Face>& faceTexcoords() const { return faceTexcoords_; }
+
+	Vec3 position() const { return position_; }
+	Vec3 color() const { return color_; }
+	double rotY() const { return rotY_; }
+	double rotZ() const { return rotZ_; }
+
+	void setPosition(const Vec3&);
+	void setColor(const Vec3&);
+	// Wraps outside [0, 360]: this is the submarine's steering rule, not a defect.
+	void setRotY(double);
+	void setRotZ(double);
+
+private:
+	std::vector<Vec3> vertices_, normals_, texcoords_;
+	std::vector<Face> faces_, faceNormals_, faceTexcoords_;
+	Vec3 position_, color_;
+	double rotY_ = 0.0, rotZ_ = 0.0;
 };
 
 #endif

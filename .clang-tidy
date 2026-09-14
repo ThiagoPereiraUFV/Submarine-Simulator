@@ -1,0 +1,27 @@
+# Checks that catch real defects (the kind this rewrite fixed: uninitialised
+# members, suppressed moves, accidental copies). Style-only checks stay off:
+# clang-format owns formatting.
+#
+# Disabled on purpose (a block scalar cannot carry inline comments, so they are
+# explained here):
+#   bugprone-easily-swappable-parameters - the physics signatures are inherently
+#     several doubles wide.
+#   bugprone-narrowing-conversions - GL takes floats, the simulation computes in
+#     doubles; the conversions are deliberate.
+#   bugprone-switch-missing-default-case - the key handlers switch on unsigned
+#     char and ignore every unlisted key by design.
+#   performance-enum-size - shrinking these enums' base type buys nothing.
+Checks: >
+  bugprone-*,
+  performance-*,
+  modernize-use-nullptr,
+  modernize-use-override,
+  modernize-use-using,
+  modernize-use-equals-default,
+  cppcoreguidelines-pro-type-member-init,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  -bugprone-switch-missing-default-case,
+  -performance-enum-size
+WarningsAsErrors: '*'
+HeaderFilterRegex: 'source/include/.*\.h$'

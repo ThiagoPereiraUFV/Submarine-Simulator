@@ -1,0 +1,11 @@
+BasedOnStyle: LLVM
+ColumnLimit: 100
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+AccessModifierOffset: -4
+PointerAlignment: Left
+AllowShortFunctionsOnASingleLine: Inline
+# Include order is hand-maintained (own header first, then system headers);
+# resorting would churn every file for no benefit.
+SortIncludes: false
